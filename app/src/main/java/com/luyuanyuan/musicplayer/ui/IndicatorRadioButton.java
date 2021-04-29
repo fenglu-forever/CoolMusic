@@ -42,8 +42,8 @@ public class IndicatorRadioButton extends AppCompatRadioButton {
         mPaint.setAntiAlias(true);
         mPaint.setDither(true);
         mPaint.setColor(Color.parseColor("#263FC89C"));
-        mBgXPadding = dpToPx(18);
-        mBgYPadding = dpToPx(6);
+        mBgXPadding = dpToPx(16);
+        mBgYPadding = dpToPx(4);
         mTextPaint.setTextSize(getTextSize());
     }
 
