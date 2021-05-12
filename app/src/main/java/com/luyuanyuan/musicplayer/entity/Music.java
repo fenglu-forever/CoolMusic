@@ -11,6 +11,16 @@ public class Music {
     private int albumId;
     private String albumName;
 
+    private boolean isSelected;
+
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(boolean selected) {
+        isSelected = selected;
+    }
+
     public String getArtist() {
         return artist;
     }

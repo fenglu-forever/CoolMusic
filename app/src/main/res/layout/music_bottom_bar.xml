@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="56dp"
+    android:layout_marginTop="-8dp">
+
+    <LinearLayout
+        android:layout_gravity="bottom"
+        android:layout_width="match_parent"
+        android:gravity="center_vertical"
+        android:layout_height="48dp"
+        android:background="#EEEEEE">
+        <TextView
+            android:text="暂未播放歌曲"
+            android:layout_marginStart="96dp"
+            android:layout_marginEnd="24dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="13sp"
+            android:textColor="@color/primary_text_color"/>
+        <ImageView
+            android:src="@drawable/ic_music_list_pager_pause"
+            android:layout_width="32dp"
+            android:layout_height="32dp"/>
+        <ImageView
+            android:src="@drawable/ic_music_list_pager_next"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"/>
+    </LinearLayout>
+    <ImageView
+        android:id="@+id/selectedMusicImg"
+        android:src="@drawable/ic_default_music_album_pic"
+        android:layout_marginStart="24dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp" />
+</FrameLayout>

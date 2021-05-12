@@ -14,6 +14,7 @@ import com.bumptech.glide.Glide;
 import com.luyuanyuan.musicplayer.R;
 import com.luyuanyuan.musicplayer.entity.Music;
 import com.luyuanyuan.musicplayer.util.MusicUtil;
+import com.luyuanyuan.musicplayer.util.UiUtil;
 
 import java.util.List;
 
@@ -52,13 +53,7 @@ public class MusicAdapter extends BaseAdapter {
             view = mInflater.inflate(R.layout.item_music_list, parent, false);
             holder = new ViewHolder();
             holder.ivPic = view.findViewById(R.id.ivPic);
-            holder.ivPic.setClipToOutline(true);
-            holder.ivPic.setOutlineProvider(new ViewOutlineProvider() {
-                @Override
-                public void getOutline(View view, Outline outline) {
-                    outline.setRoundRect(0,0,view.getWidth(),view.getHeight(), mContext.getResources().getDimension(R.dimen.music_album_pic_conner));
-                }
-            });
+            UiUtil.roundView(holder.ivPic, mContext.getResources().getDimension(R.dimen.music_album_pic_conner));
             holder.tvName = view.findViewById(R.id.tvName);
             holder.tvArtist = view.findViewById(R.id.tvArtist);
             holder.ivMore = view.findViewById(R.id.ivMore);
@@ -74,7 +69,18 @@ public class MusicAdapter extends BaseAdapter {
                 .placeholder(R.drawable.ic_default_music_album_pic)
                 .error(R.drawable.ic_default_music_album_pic)
                 .into(holder.ivPic);
+        if (music.isSelected()) {
+            holder.tvName.setTextColor(mContext.getColor(R.color.theme_color));
+            holder.tvArtist.setTextColor(mContext.getColor(R.color.theme_color));
+        } else {
+            holder.tvName.setTextColor(mContext.getColor(R.color.primary_text_color));
+            holder.tvArtist.setTextColor(mContext.getColor(R.color.summary_text_color));
+        }
         return view;
+    }
+
+    public List<Music> getMusicList() {
+        return mMusicList;
     }
 
     static class ViewHolder {

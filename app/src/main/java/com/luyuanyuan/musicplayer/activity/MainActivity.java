@@ -5,7 +5,11 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import android.graphics.Outline;
 import android.os.Bundle;
+import android.view.View;
+import android.view.ViewOutlineProvider;
+import android.widget.ImageView;
 import android.widget.RadioGroup;
 
 import com.luyuanyuan.musicplayer.R;
@@ -21,6 +25,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     private ViewPager mViewPager;
     private RadioGroup mRadioGroup;
+    private ImageView mSelectedMusicImg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +42,8 @@ public class MainActivity extends AppCompatActivity {
     private void initViews() {
         mViewPager = findViewById(R.id.viewPager);
         mRadioGroup = findViewById(R.id.radioGroup);
+        mSelectedMusicImg = findViewById(R.id.selectedMusicImg);
+        UiUtil.roundView(mSelectedMusicImg, getResources().getDimension(R.dimen.selected_music_pic_conner));
     }
 
     private void initListeners() {

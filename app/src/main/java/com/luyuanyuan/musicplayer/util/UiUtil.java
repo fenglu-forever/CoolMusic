@@ -1,6 +1,8 @@
 package com.luyuanyuan.musicplayer.util;
 
+import android.graphics.Outline;
 import android.view.View;
+import android.view.ViewOutlineProvider;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -27,5 +29,15 @@ public class UiUtil {
 
     public static void setLightSystemBar(Window window) {
         window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR | View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);
+    }
+
+    public static void roundView(View view, final float conner) {
+        view.setClipToOutline(true);
+        view.setOutlineProvider(new ViewOutlineProvider() {
+            @Override
+            public void getOutline(View view, Outline outline) {
+                outline.setRoundRect(0,0,view.getWidth(),view.getHeight(),conner);
+            }
+        });
     }
 }
