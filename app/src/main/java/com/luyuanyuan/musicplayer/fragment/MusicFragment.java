@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.luyuanyuan.musicplayer.R;
+import com.luyuanyuan.musicplayer.activity.MainActivity;
 import com.luyuanyuan.musicplayer.adapter.MusicAdapter;
 import com.luyuanyuan.musicplayer.entity.Music;
 import com.luyuanyuan.musicplayer.util.MusicUtil;
@@ -53,6 +54,8 @@ public class MusicFragment extends Fragment {
             Music selectedMusic = mAdapter.getItem(position);
             selectedMusic.setSelected(true);
             mAdapter.notifyDataSetChanged();
+            MainActivity activity = (MainActivity) getActivity();
+            activity.requestPlayMusic(selectedMusic);
         }
     });
     }
