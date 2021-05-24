@@ -9,7 +9,6 @@ import android.widget.ListView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 
 import com.luyuanyuan.musicplayer.R;
 import com.luyuanyuan.musicplayer.activity.MainActivity;
@@ -20,9 +19,10 @@ import com.luyuanyuan.musicplayer.util.MusicUtil;
 import java.util.List;
 
 
-public class MusicFragment extends Fragment {
+public class MusicFragment extends BaseFragment {
     private ListView mMusicList;
     private MusicAdapter mAdapter;
+    private int mSelectedPosition = -1;
 
     @Nullable
     @Override
@@ -51,6 +51,7 @@ public class MusicFragment extends Fragment {
             for (Music music : musicList) {
                 music.setSelected(false);
             }
+            mSelectedPosition = position;
             Music selectedMusic = mAdapter.getItem(position);
             selectedMusic.setSelected(true);
             mAdapter.notifyDataSetChanged();
@@ -58,10 +59,28 @@ public class MusicFragment extends Fragment {
             activity.requestPlayMusic(selectedMusic);
         }
     });
-    }
+}
 
     private void initAdapters() {
         mAdapter = new MusicAdapter(getActivity(), MusicUtil.getMusicList());
         mMusicList.setAdapter(mAdapter);
+    }
+
+    @Override
+    public Music getNextMusic() {
+        mSelectedPosition++;
+        List<Music> musicList = mAdapter.getMusicList();
+        if (mSelectedPosition >= musicList.size()) {
+            mSelectedPosition = 0;
+        }
+        // 为了让音乐列表刷新到next的选中状态
+        for (Music music : musicList) {
+            music.setSelected(false);
+        }
+        Music nexMusic = musicList.get(mSelectedPosition);
+        nexMusic.setSelected(true);
+        mAdapter.notifyDataSetChanged();
+        //
+        return nexMusic;
     }
 }

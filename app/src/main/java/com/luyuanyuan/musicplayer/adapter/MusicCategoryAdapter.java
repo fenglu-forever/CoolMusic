@@ -5,12 +5,14 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
+import com.luyuanyuan.musicplayer.fragment.BaseFragment;
+
 import java.util.List;
 
 public class MusicCategoryAdapter extends FragmentPagerAdapter {
-    private List<Fragment> mFragments;
+    private List<BaseFragment> mFragments;
 
-    public MusicCategoryAdapter(@NonNull FragmentManager fm, int behavior, List<Fragment> fragments) {
+    public MusicCategoryAdapter(@NonNull FragmentManager fm, int behavior, List<BaseFragment> fragments) {
         super(fm, behavior);
         mFragments = fragments;
     }

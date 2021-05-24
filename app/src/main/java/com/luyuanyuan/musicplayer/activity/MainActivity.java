@@ -5,10 +5,12 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import android.animation.ObjectAnimator;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -18,6 +20,7 @@ import com.luyuanyuan.musicplayer.R;
 import com.luyuanyuan.musicplayer.adapter.MusicCategoryAdapter;
 import com.luyuanyuan.musicplayer.entity.Music;
 import com.luyuanyuan.musicplayer.fragment.AlbumFragment;
+import com.luyuanyuan.musicplayer.fragment.BaseFragment;
 import com.luyuanyuan.musicplayer.fragment.CollectFragment;
 import com.luyuanyuan.musicplayer.fragment.MusicFragment;
 import com.luyuanyuan.musicplayer.util.MusicUtil;
@@ -27,22 +30,32 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener{
     private ViewPager mViewPager;
     private RadioGroup mRadioGroup;
     private ImageView mSelectedMusicImg;
     private TextView mSelectedMusicText;
     private ImageView btnPlayOrPause;
+    private ImageView btnNext;
 
     private MediaPlayer mPlayer;
     private Music mSelectedMusic;
     private int mCurrentPosition;
+    private ObjectAnimator mRotateAnim;
+    private List<BaseFragment> mFragmentList = new ArrayList<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mPlayer = new MediaPlayer();
+        mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                requestNextMusic();
+            }
+        });
         UiUtil.setStatusBarColor(getWindow(), getColor(R.color.pager_background_color));
         UiUtil.setNavigationBarColor(getWindow(), getColor(R.color.pager_background_color));
         UiUtil.setLightSystemBar(getWindow());
@@ -64,9 +77,13 @@ public class MainActivity extends AppCompatActivity {
         mViewPager = findViewById(R.id.viewPager);
         mRadioGroup = findViewById(R.id.radioGroup);
         mSelectedMusicImg = findViewById(R.id.selectedMusicImg);
+        mRotateAnim = ObjectAnimator.ofFloat(mSelectedMusicImg, "rotation",0, 360);
+        mRotateAnim.setDuration(24 * 1000);
+        mRotateAnim.setInterpolator(new LinearInterpolator());
         UiUtil.roundView(mSelectedMusicImg, getResources().getDimension(R.dimen.selected_music_pic_conner));
         mSelectedMusicText = findViewById(R.id.selectedMusicText);
         btnPlayOrPause = findViewById(R.id.btnPlayOrPause);
+        btnNext = findViewById(R.id.btnNext);
     }
 
     private void initListeners() {
@@ -116,29 +133,26 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-        btnPlayOrPause.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mSelectedMusic != null) {
-                    if (mSelectedMusic.isPlaying()) {
-                        requestPauseMusic(mSelectedMusic);
-                    } else {
-                        requestPlayMusic(mSelectedMusic);
-                    }
-                }
-            }
-        });
+        btnPlayOrPause.setOnClickListener(this);
+        btnNext.setOnClickListener(this);
     }
 
     private void initAdapters() {
-        List<Fragment> fragmentList = new ArrayList<>();
-        fragmentList.add(new MusicFragment());
-        fragmentList.add(new AlbumFragment());
-        fragmentList.add(new CollectFragment());
-        mViewPager.setAdapter(new MusicCategoryAdapter(getSupportFragmentManager(), FragmentPagerAdapter.BEHAVIOR_SET_USER_VISIBLE_HINT, fragmentList));
+        mFragmentList.add(new MusicFragment());
+        mFragmentList.add(new AlbumFragment());
+        mFragmentList.add(new CollectFragment());
+        mViewPager.setAdapter(new MusicCategoryAdapter(getSupportFragmentManager(), FragmentPagerAdapter.BEHAVIOR_SET_USER_VISIBLE_HINT, mFragmentList));
     }
 
     public void requestPlayMusic(Music music) {
+        if (mSelectedMusic != music) {
+            mRotateAnim.cancel();
+            mCurrentPosition = 0;
+        } else {
+            if (mSelectedMusic.isPlaying()) {
+                return;
+            }
+        }
         // 1.让 MediaPlayer执行
         playMusic(music);
         // 2.把选中歌曲的信息同步到底部栏
@@ -152,6 +166,13 @@ public class MainActivity extends AppCompatActivity {
         pauseMusic();
         // 2.把歌曲的播放状态同步更新底部栏
         onPlayStateChanged(false, music);
+    }
+
+    private void requestNextMusic() {
+        Music nextMusic = mFragmentList.get(mViewPager.getCurrentItem()).getNextMusic();
+        if (nextMusic != null) {
+            requestPlayMusic(nextMusic);
+        }
     }
 
     private void playMusic(Music music) {
@@ -187,8 +208,34 @@ public class MainActivity extends AppCompatActivity {
         music.setPlaying(isPlaying);
         if (isPlaying) {
             btnPlayOrPause.setImageResource(R.drawable.ic_music_list_pager_play);
+            if (!mRotateAnim.isStarted()) {
+                mRotateAnim.start();
+            } else {
+                mRotateAnim.resume();
+            }
         } else {
             btnPlayOrPause.setImageResource(R.drawable.ic_music_list_pager_pause);
+            mRotateAnim.pause();
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btnPlayOrPause:
+                if (mSelectedMusic != null) {
+                    if (mSelectedMusic.isPlaying()) {
+                        requestPauseMusic(mSelectedMusic);
+                    } else {
+                        requestPlayMusic(mSelectedMusic);
+                    }
+                }
+                break;
+            case R.id.btnNext:
+               requestNextMusic();
+                break;
+            default:
+                break;
         }
     }
 }

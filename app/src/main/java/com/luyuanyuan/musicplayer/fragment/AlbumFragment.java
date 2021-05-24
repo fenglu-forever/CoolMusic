@@ -7,15 +7,20 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 
 import com.luyuanyuan.musicplayer.R;
+import com.luyuanyuan.musicplayer.entity.Music;
 
 
-public class AlbumFragment extends Fragment {
+public class AlbumFragment extends BaseFragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_album, container, false);
+    }
+
+    @Override
+    public Music getNextMusic() {
+        return null;
     }
 }
