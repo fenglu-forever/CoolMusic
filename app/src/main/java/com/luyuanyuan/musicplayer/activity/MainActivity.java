@@ -23,6 +23,7 @@ import com.luyuanyuan.musicplayer.fragment.AlbumFragment;
 import com.luyuanyuan.musicplayer.fragment.BaseFragment;
 import com.luyuanyuan.musicplayer.fragment.CollectFragment;
 import com.luyuanyuan.musicplayer.fragment.MusicFragment;
+import com.luyuanyuan.musicplayer.ui.PlayOrPauseView;
 import com.luyuanyuan.musicplayer.util.MusicUtil;
 import com.luyuanyuan.musicplayer.util.UiUtil;
 
@@ -30,12 +31,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private ViewPager mViewPager;
     private RadioGroup mRadioGroup;
     private ImageView mSelectedMusicImg;
     private TextView mSelectedMusicText;
-    private ImageView btnPlayOrPause;
+    private PlayOrPauseView btnPlayOrPause;
     private ImageView btnNext;
 
     private MediaPlayer mPlayer;
@@ -43,6 +44,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private int mCurrentPosition;
     private ObjectAnimator mRotateAnim;
     private List<BaseFragment> mFragmentList = new ArrayList<>();
+    private Runnable mMusicProgressTak = new Runnable() {
+        @Override
+        public void run() {
+            updateMusicProgress(true);
+        }
+    };
 
 
     @Override
@@ -77,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mViewPager = findViewById(R.id.viewPager);
         mRadioGroup = findViewById(R.id.radioGroup);
         mSelectedMusicImg = findViewById(R.id.selectedMusicImg);
-        mRotateAnim = ObjectAnimator.ofFloat(mSelectedMusicImg, "rotation",0, 360);
+        mRotateAnim = ObjectAnimator.ofFloat(mSelectedMusicImg, "rotation", 0, 360);
         mRotateAnim.setDuration(24 * 1000);
         mRotateAnim.setInterpolator(new LinearInterpolator());
         UiUtil.roundView(mSelectedMusicImg, getResources().getDimension(R.dimen.selected_music_pic_conner));
@@ -201,21 +208,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .placeholder(R.drawable.ic_default_music_album_pic)
                 .error(R.drawable.ic_default_music_album_pic)
                 .into(mSelectedMusicImg);
-        mSelectedMusicText.setText(music.getName() + " - "  + music.getArtist());
+        mSelectedMusicText.setText(music.getName() + " - " + music.getArtist());
     }
 
     private void onPlayStateChanged(boolean isPlaying, Music music) {
         music.setPlaying(isPlaying);
         if (isPlaying) {
-            btnPlayOrPause.setImageResource(R.drawable.ic_music_list_pager_play);
+            btnPlayOrPause.setPlay(true);
             if (!mRotateAnim.isStarted()) {
                 mRotateAnim.start();
             } else {
                 mRotateAnim.resume();
             }
         } else {
-            btnPlayOrPause.setImageResource(R.drawable.ic_music_list_pager_pause);
+            btnPlayOrPause.setPlay(false);
             mRotateAnim.pause();
+        }
+        updateMusicProgress(isPlaying);
+    }
+
+    private void updateMusicProgress(boolean isPlaying) {
+        int progress = 100 * mPlayer.getCurrentPosition() / mPlayer.getDuration();
+        btnPlayOrPause.setProgress(progress);
+        if (isPlaying) {
+            btnPlayOrPause.removeCallbacks(mMusicProgressTak);
+            btnPlayOrPause.postDelayed(mMusicProgressTak, 1000);
+        } else {
+            btnPlayOrPause.removeCallbacks(mMusicProgressTak);
         }
     }
 
@@ -232,7 +251,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 break;
             case R.id.btnNext:
-               requestNextMusic();
+                requestNextMusic();
                 break;
             default:
                 break;

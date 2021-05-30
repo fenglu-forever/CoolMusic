@@ -2,4 +2,5 @@
 <resources>
     <dimen name="music_album_pic_conner">8dp</dimen>
     <dimen name="selected_music_pic_conner">24dp</dimen>
+    <dimen name="play_or_pause_circle_stroke">2dp</dimen>
 </resources>

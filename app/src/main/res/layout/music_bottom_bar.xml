@@ -5,43 +5,46 @@
     android:layout_marginTop="-8dp">
 
     <LinearLayout
-        android:layout_gravity="bottom"
         android:layout_width="match_parent"
-        android:gravity="center_vertical"
         android:layout_height="48dp"
-        android:background="#EEEEEE">
+        android:layout_gravity="bottom"
+        android:background="#EEEEEE"
+        android:gravity="center_vertical">
+
         <TextView
             android:id="@+id/selectedMusicText"
-            android:text="暂未播放歌曲"
-            android:layout_marginStart="96dp"
-            android:layout_marginEnd="24dp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="96dp"
+            android:layout_marginEnd="24dp"
             android:layout_weight="1"
-            android:textSize="13sp"
-            android:singleLine="true"
             android:ellipsize="marquee"
             android:focusable="true"
             android:focusableInTouchMode="true"
             android:marqueeRepeatLimit="marquee_forever"
-            android:textColor="@color/primary_text_color"/>
-        <ImageView
+            android:singleLine="true"
+            android:text="暂未播放歌曲"
+            android:textColor="@color/primary_text_color"
+            android:textSize="13sp" />
+
+        <com.luyuanyuan.musicplayer.ui.PlayOrPauseView
             android:id="@+id/btnPlayOrPause"
-            android:src="@drawable/ic_music_list_pager_pause"
             android:layout_width="32dp"
-            android:layout_height="32dp"/>
+            android:layout_height="32dp" />
+
         <ImageView
             android:id="@+id/btnNext"
-            android:src="@drawable/ic_music_list_pager_next"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_marginStart="24dp"
-            android:layout_marginEnd="24dp"/>
+            android:layout_marginEnd="24dp"
+            android:src="@drawable/ic_music_list_pager_next" />
     </LinearLayout>
+
     <ImageView
         android:id="@+id/selectedMusicImg"
-        android:src="@drawable/ic_default_music_album_pic"
-        android:layout_marginStart="24dp"
         android:layout_width="48dp"
-        android:layout_height="48dp" />
+        android:layout_height="48dp"
+        android:layout_marginStart="24dp"
+        android:src="@drawable/ic_default_music_album_pic" />
 </FrameLayout>
