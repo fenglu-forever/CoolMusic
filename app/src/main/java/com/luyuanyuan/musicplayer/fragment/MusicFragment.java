@@ -44,22 +44,22 @@ public class MusicFragment extends BaseFragment {
     }
 
     private void initListeners() {
-    mMusicList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            List<Music> musicList = mAdapter.getMusicList();
-            for (Music music : musicList) {
-                music.setSelected(false);
+        mMusicList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                List<Music> musicList = mAdapter.getMusicList();
+                for (Music music : musicList) {
+                    music.setSelected(false);
+                }
+                mSelectedPosition = position;
+                Music selectedMusic = mAdapter.getItem(position);
+                selectedMusic.setSelected(true);
+                mAdapter.notifyDataSetChanged();
+                MainActivity activity = (MainActivity) getActivity();
+                activity.playMusic(selectedMusic);
             }
-            mSelectedPosition = position;
-            Music selectedMusic = mAdapter.getItem(position);
-            selectedMusic.setSelected(true);
-            mAdapter.notifyDataSetChanged();
-            MainActivity activity = (MainActivity) getActivity();
-            activity.requestPlayMusic(selectedMusic);
-        }
-    });
-}
+        });
+    }
 
     private void initAdapters() {
         mAdapter = new MusicAdapter(getActivity(), MusicUtil.getMusicList());

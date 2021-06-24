@@ -1,14 +1,19 @@
 package com.luyuanyuan.musicplayer.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import android.animation.ObjectAnimator;
-import android.media.MediaPlayer;
+import android.animation.ValueAnimator;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.util.Log;
+import android.os.IBinder;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
@@ -23,11 +28,12 @@ import com.luyuanyuan.musicplayer.fragment.AlbumFragment;
 import com.luyuanyuan.musicplayer.fragment.BaseFragment;
 import com.luyuanyuan.musicplayer.fragment.CollectFragment;
 import com.luyuanyuan.musicplayer.fragment.MusicFragment;
+import com.luyuanyuan.musicplayer.service.MusicService;
 import com.luyuanyuan.musicplayer.ui.PlayOrPauseView;
+import com.luyuanyuan.musicplayer.util.Constant;
 import com.luyuanyuan.musicplayer.util.MusicUtil;
 import com.luyuanyuan.musicplayer.util.UiUtil;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,36 +45,68 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private PlayOrPauseView btnPlayOrPause;
     private ImageView btnNext;
 
-    private MediaPlayer mPlayer;
     private Music mSelectedMusic;
-    private int mCurrentPosition;
     private ObjectAnimator mRotateAnim;
     private List<BaseFragment> mFragmentList = new ArrayList<>();
-    private Runnable mMusicProgressTak = new Runnable() {
+
+
+    private MusicService.MusicBinder mMusicServer;
+    private MusicBroadcastReceiver mMusicReceiver;
+
+    private ServiceConnection mConnection = new ServiceConnection() {
         @Override
-        public void run() {
-            updateMusicProgress(true);
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            mMusicServer = (MusicService.MusicBinder) service;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+
         }
     };
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mPlayer = new MediaPlayer();
-        mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                requestNextMusic();
-            }
-        });
         UiUtil.setStatusBarColor(getWindow(), getColor(R.color.pager_background_color));
         UiUtil.setNavigationBarColor(getWindow(), getColor(R.color.pager_background_color));
-        UiUtil.setLightSystemBar(getWindow());
+        UiUtil.setLightStatusBar(getWindow(), getWindow().getDecorView().getSystemUiVisibility());
+        UiUtil.setLightNavigationBar(getWindow(), getWindow().getDecorView().getSystemUiVisibility());
         initViews();
         initListeners();
         initAdapters();
+        bindMusicService();
+        registerMusicBroadcast();
+    }
+
+    private void registerMusicBroadcast() {
+        mMusicReceiver = new MusicBroadcastReceiver();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Constant.ACTION_NEXT_MUSIC);
+        filter.addAction(Constant.ACTION_UPDATE_PROGRESS);
+        registerReceiver(mMusicReceiver, filter);
+    }
+
+    private void unregisterMusicBroadcast() {
+        unregisterReceiver(mMusicReceiver);
+    }
+
+    private void bindMusicService() {
+        Intent intent = new Intent(this, MusicService.class);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    private void unbindMusicService() {
+        unbindService(mConnection);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mRotateAnim.cancel();
+        unbindMusicService();
+        unregisterMusicBroadcast();
     }
 
     @Override
@@ -76,7 +114,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onWindowFocusChanged(hasFocus);
         if (hasFocus) {
             mSelectedMusicText.requestFocus();
-            UiUtil.setLightSystemBar(getWindow());
+            UiUtil.setLightStatusBar(getWindow(), getWindow().getDecorView().getSystemUiVisibility());
+            UiUtil.setLightNavigationBar(getWindow(), getWindow().getDecorView().getSystemUiVisibility());
         }
     }
 
@@ -87,6 +126,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mRotateAnim = ObjectAnimator.ofFloat(mSelectedMusicImg, "rotation", 0, 360);
         mRotateAnim.setDuration(24 * 1000);
         mRotateAnim.setInterpolator(new LinearInterpolator());
+        mRotateAnim.setRepeatCount(ValueAnimator.INFINITE);
         UiUtil.roundView(mSelectedMusicImg, getResources().getDimension(R.dimen.selected_music_pic_conner));
         mSelectedMusicText = findViewById(R.id.selectedMusicText);
         btnPlayOrPause = findViewById(R.id.btnPlayOrPause);
@@ -142,6 +182,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
         btnPlayOrPause.setOnClickListener(this);
         btnNext.setOnClickListener(this);
+        mSelectedMusicImg.setOnClickListener(this);
     }
 
     private void initAdapters() {
@@ -151,53 +192,40 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mViewPager.setAdapter(new MusicCategoryAdapter(getSupportFragmentManager(), FragmentPagerAdapter.BEHAVIOR_SET_USER_VISIBLE_HINT, mFragmentList));
     }
 
-    public void requestPlayMusic(Music music) {
+    public void playMusic(Music music) {
         if (mSelectedMusic != music) {
             mRotateAnim.cancel();
-            mCurrentPosition = 0;
+            if (mMusicServer != null) {
+                mMusicServer.requestSetCurrentPosition(0);
+            }
         } else {
             if (mSelectedMusic.isPlaying()) {
                 return;
             }
         }
         // 1.让 MediaPlayer执行
-        playMusic(music);
+        if (mMusicServer != null) {
+            mMusicServer.requestPlayMusic(music);
+        }
         // 2.把选中歌曲的信息同步到底部栏
         onMusicSelected(music);
         //3.把播放状态同步到底部栏
         onPlayStateChanged(true, music);
     }
 
-    public void requestPauseMusic(Music music) {
+    public void pauseMusic(Music music) {
         // 1.让MediaPlayer执行暂停
-        pauseMusic();
+        if (mMusicServer != null) {
+            mMusicServer.requestPauseMusic();
+        }
         // 2.把歌曲的播放状态同步更新底部栏
         onPlayStateChanged(false, music);
     }
 
-    private void requestNextMusic() {
+    private void nextMusic() {
         Music nextMusic = mFragmentList.get(mViewPager.getCurrentItem()).getNextMusic();
         if (nextMusic != null) {
-            requestPlayMusic(nextMusic);
-        }
-    }
-
-    private void playMusic(Music music) {
-        try {
-            mPlayer.reset();
-            mPlayer.setDataSource(music.getUrl());
-            mPlayer.prepare();
-            mPlayer.seekTo(mCurrentPosition);
-            mPlayer.start();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void pauseMusic() {
-        if (mPlayer.isPlaying()) {
-            mPlayer.pause();
-            mCurrentPosition = mPlayer.getCurrentPosition();
+            playMusic(nextMusic);
         }
     }
 
@@ -224,18 +252,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             btnPlayOrPause.setPlay(false);
             mRotateAnim.pause();
         }
-        updateMusicProgress(isPlaying);
-    }
-
-    private void updateMusicProgress(boolean isPlaying) {
-        int progress = 100 * mPlayer.getCurrentPosition() / mPlayer.getDuration();
-        btnPlayOrPause.setProgress(progress);
-        if (isPlaying) {
-            btnPlayOrPause.removeCallbacks(mMusicProgressTak);
-            btnPlayOrPause.postDelayed(mMusicProgressTak, 1000);
-        } else {
-            btnPlayOrPause.removeCallbacks(mMusicProgressTak);
-        }
     }
 
     @Override
@@ -244,17 +260,42 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btnPlayOrPause:
                 if (mSelectedMusic != null) {
                     if (mSelectedMusic.isPlaying()) {
-                        requestPauseMusic(mSelectedMusic);
+                        pauseMusic(mSelectedMusic);
                     } else {
-                        requestPlayMusic(mSelectedMusic);
+                        playMusic(mSelectedMusic);
                     }
                 }
                 break;
             case R.id.btnNext:
-                requestNextMusic();
+                nextMusic();
+                break;
+            case R.id.selectedMusicImg:
+                Intent intent = new Intent(this, MusicDetailActivity.class);
+                intent.putExtra(Constant.EXTRA_MUSIC, mSelectedMusic);
+                startActivity(intent);
+                overridePendingTransition(R.anim.muisc_detail_enter, 0);
                 break;
             default:
                 break;
+        }
+    }
+
+    private class MusicBroadcastReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent != null) {
+                String action = intent.getAction();
+                switch (action) {
+                    case Constant.ACTION_NEXT_MUSIC:
+                        nextMusic();
+                        break;
+                    case Constant.ACTION_UPDATE_PROGRESS:
+                        int progress = intent.getIntExtra(Constant.EXTRA_MUSIC_PROGRESS, 0);
+                        btnPlayOrPause.setProgress(progress);
+                        break;
+                }
+            }
         }
     }
 }

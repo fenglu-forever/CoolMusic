@@ -1,6 +1,8 @@
 package com.luyuanyuan.musicplayer.entity;
 
-public class Music {
+import java.io.Serializable;
+
+public class Music implements Serializable {
     private String name;
     private String artist;
 
