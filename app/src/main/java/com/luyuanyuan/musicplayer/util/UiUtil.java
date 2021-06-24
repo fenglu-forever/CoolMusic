@@ -87,8 +87,7 @@ public class UiUtil {
         blurScript.forEach(allOut);
         // Copy the final bitmap created by the out Allocation to the outBitmap
         allOut.copyTo(outBitmap);
-        // recycle the original bitmap
-        // bitmap.recycle();
+
         // After finishing everything, we destroy the Renderscript.
         renderScript.destroy();
         return outBitmap;
