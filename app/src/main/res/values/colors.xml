@@ -9,4 +9,6 @@
     <color name="primary_text_color">#000000</color>
     <color name="summary_text_color">#888888</color>
 
+    <color name="music_detail_gray">#66FFFFFF</color>
+    <color name="music_detail_white">#EAFFFFFF</color>
 </resources>

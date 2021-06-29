@@ -1,0 +1,9 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="1024"
+    android:viewportHeight="1024">
+  <path
+      android:fillColor="@color/music_detail_gray"
+      android:pathData="M480.73,723.48C498.23,739.95 525.83,739.89 543.27,723.48L950.08,340.6C962.16,329.23 962.86,310.1 951.64,297.86 940.43,285.62 921.55,284.91 909.47,296.27L502.65,679.15C508.08,674.05 515.9,674.03 521.35,679.15L114.53,296.27C102.45,284.91 83.57,285.62 72.36,297.86 61.14,310.1 61.84,329.23 73.92,340.6L480.73,723.48Z"/>
+</vector>

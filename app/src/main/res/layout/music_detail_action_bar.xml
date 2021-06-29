@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="48dp"
+    android:paddingStart="24dp"
+    android:paddingEnd="24dp">
+
+    <ImageView
+        android:id="@+id/ivBack"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/ic_down_gray_back_arrow"
+        android:layout_gravity="center_vertical" />
+
+    <RadioGroup
+        android:id="@+id/radioGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:checkedButton="@+id/rbtnSong"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/rbtnSong"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:button="@null"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:text="歌曲"
+            android:textColor="@color/selector_music_detail_category"
+            android:textSize="16sp" />
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="10dp"
+            android:background="@color/music_detail_gray" />
+
+        <RadioButton
+            android:id="@+id/rbtnLyric"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:button="@null"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:text="歌词"
+            android:textColor="@color/selector_music_detail_category"
+            android:textSize="16sp" />
+    </RadioGroup>
+</FrameLayout>
