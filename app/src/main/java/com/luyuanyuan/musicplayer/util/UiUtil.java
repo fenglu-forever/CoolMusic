@@ -10,6 +10,7 @@ import android.renderscript.Allocation;
 import android.renderscript.Element;
 import android.renderscript.RenderScript;
 import android.renderscript.ScriptIntrinsicBlur;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewOutlineProvider;
 import android.view.Window;
@@ -91,5 +92,14 @@ public class UiUtil {
         // After finishing everything, we destroy the Renderscript.
         renderScript.destroy();
         return outBitmap;
+    }
+
+    public static DisplayMetrics getScreenInfo(Context context) {
+        DisplayMetrics dm = new DisplayMetrics();
+        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        if (wm != null) {
+            wm.getDefaultDisplay().getRealMetrics(dm);
+        }
+        return dm;
     }
 }

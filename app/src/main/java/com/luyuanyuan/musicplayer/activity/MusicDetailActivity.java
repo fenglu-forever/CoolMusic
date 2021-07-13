@@ -34,11 +34,13 @@ public class MusicDetailActivity extends AppCompatActivity implements View.OnCli
     private ImageView ivBack;
     private ViewPager mViewPager;
     private RadioGroup mGadioGroup;
+    private Music mSelectedMusic;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activty_music_detail);
+        mSelectedMusic = (Music) getIntent().getSerializableExtra(Constant.EXTRA_MUSIC);
         initViews();
         initListeners();
         initAdapters();
@@ -111,7 +113,9 @@ public class MusicDetailActivity extends AppCompatActivity implements View.OnCli
 
     private void initAdapters() {
         List<Fragment> fragmentList = new ArrayList<>();
-        fragmentList.add(new SongFragment());
+        SongFragment songFragment = new SongFragment();
+        songFragment.updateSelectedMusic(mSelectedMusic);
+        fragmentList.add(songFragment);
         fragmentList.add(new LyricFragment());
         mViewPager.setAdapter(new MusicDetailAdapter(getSupportFragmentManager(),
                 FragmentPagerAdapter.BEHAVIOR_SET_USER_VISIBLE_HINT,
@@ -119,11 +123,10 @@ public class MusicDetailActivity extends AppCompatActivity implements View.OnCli
     }
 
     private void bindData() {
-        Music music = (Music) getIntent().getSerializableExtra(Constant.EXTRA_MUSIC);
-        if (music != null) {
+        if (mSelectedMusic != null) {
             Glide.with(this)
                     .asBitmap()
-                    .load(MusicUtil.getAlbumPicUri(music.getAlbumId()))
+                    .load(MusicUtil.getAlbumPicUri(mSelectedMusic.getAlbumId()))
                     .placeholder(R.drawable.ic_default_music_album_pic)
                     .error(R.drawable.ic_default_music_album_pic)
                     .into(new SimpleTarget<Bitmap>() {
