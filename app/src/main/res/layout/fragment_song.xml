@@ -63,9 +63,41 @@
     <TextView
         android:id="@+id/tvLyric"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_marginTop="10dp"
+        android:layout_weight="1"
         android:text="我沉沦几回"
         android:textColor="@color/music_detail_gray"
         android:textSize="15sp" />
+
+    <SeekBar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="-10dp"
+        android:layout_marginEnd="-10dp"
+        android:maxHeight="3dp"
+        android:progressDrawable="@drawable/seekbar_progress_bg"
+        android:thumb="@drawable/seekbar_thumb" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="12dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="00:00"
+            android:textColor="@color/music_detail_gray" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:text="00:00"
+            android:textColor="@color/music_detail_gray" />
+    </FrameLayout>
+
+    <include layout="@layout/fragment_music_song_bottom_bar" />
 </LinearLayout>

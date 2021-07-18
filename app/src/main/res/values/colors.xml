@@ -11,4 +11,6 @@
 
     <color name="music_detail_gray">#66FFFFFF</color>
     <color name="music_detail_white">#EAFFFFFF</color>
+    <color name="seekbar_bg">#26000000</color>
+    <color name="seekbar_progress">#EAFFFFFF</color>
 </resources>

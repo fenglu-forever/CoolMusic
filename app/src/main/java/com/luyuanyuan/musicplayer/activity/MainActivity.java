@@ -14,6 +14,7 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
@@ -85,6 +86,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         IntentFilter filter = new IntentFilter();
         filter.addAction(Constant.ACTION_NEXT_MUSIC);
         filter.addAction(Constant.ACTION_UPDATE_PROGRESS);
+        filter.addAction(Constant.ACTION_PLAY_MUSIC);
+        filter.addAction(Constant.ACTION_PAUSE_MUSIC);
         registerReceiver(mMusicReceiver, filter);
     }
 
@@ -252,6 +255,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             btnPlayOrPause.setPlay(false);
             mRotateAnim.pause();
         }
+        Intent intent = new Intent(Constant.ACTION_UPDATE_MUSIC);
+        intent.putExtra(Constant.EXTRA_MUSIC, music);
+        sendBroadcast(intent);
     }
 
     @Override
@@ -293,6 +299,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     case Constant.ACTION_UPDATE_PROGRESS:
                         int progress = intent.getIntExtra(Constant.EXTRA_MUSIC_PROGRESS, 0);
                         btnPlayOrPause.setProgress(progress);
+                        break;
+                    case Constant.ACTION_PLAY_MUSIC:
+                        playMusic(mSelectedMusic);
+                        break;
+                    case Constant.ACTION_PAUSE_MUSIC:
+                        pauseMusic(mSelectedMusic);
                         break;
                 }
             }

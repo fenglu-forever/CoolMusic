@@ -1,8 +1,13 @@
 package com.luyuanyuan.musicplayer.activity;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RadioGroup;
@@ -35,6 +40,8 @@ public class MusicDetailActivity extends AppCompatActivity implements View.OnCli
     private ViewPager mViewPager;
     private RadioGroup mGadioGroup;
     private Music mSelectedMusic;
+    private List<Fragment> mFragmentList = new ArrayList<>();
+    private BroadcastReceiver mReceiver;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -49,6 +56,16 @@ public class MusicDetailActivity extends AppCompatActivity implements View.OnCli
         UiUtil.setNavigationBarColor(getWindow(), Color.TRANSPARENT);
         UiUtil.expandStatusBar(getWindow(), getWindow().getDecorView().getSystemUiVisibility());
         UiUtil.expandNavigationBar(getWindow(), getWindow().getDecorView().getSystemUiVisibility());
+        mReceiver = new UpdateMusicBroadcastReceiver();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Constant.ACTION_UPDATE_MUSIC);
+        registerReceiver(mReceiver, filter);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(mReceiver);
     }
 
     @Override
@@ -112,14 +129,13 @@ public class MusicDetailActivity extends AppCompatActivity implements View.OnCli
     }
 
     private void initAdapters() {
-        List<Fragment> fragmentList = new ArrayList<>();
         SongFragment songFragment = new SongFragment();
         songFragment.updateSelectedMusic(mSelectedMusic);
-        fragmentList.add(songFragment);
-        fragmentList.add(new LyricFragment());
+        mFragmentList.add(songFragment);
+        mFragmentList.add(new LyricFragment());
         mViewPager.setAdapter(new MusicDetailAdapter(getSupportFragmentManager(),
                 FragmentPagerAdapter.BEHAVIOR_SET_USER_VISIBLE_HINT,
-                fragmentList));
+                mFragmentList));
     }
 
     private void bindData() {
@@ -154,6 +170,26 @@ public class MusicDetailActivity extends AppCompatActivity implements View.OnCli
                 break;
             default:
                 break;
+        }
+    }
+
+    private class UpdateMusicBroadcastReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent == null) {
+                return;
+            }
+            String action = intent.getAction();
+            switch (action) {
+                case Constant.ACTION_UPDATE_MUSIC:
+                    mSelectedMusic = (Music) intent.getSerializableExtra(Constant.EXTRA_MUSIC);
+                    SongFragment songFragment = (SongFragment) mFragmentList.get(0);
+                    songFragment.updateSelectedMusic(mSelectedMusic);
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }
