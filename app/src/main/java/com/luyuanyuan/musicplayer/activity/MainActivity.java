@@ -14,7 +14,6 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
@@ -88,6 +87,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         filter.addAction(Constant.ACTION_UPDATE_PROGRESS);
         filter.addAction(Constant.ACTION_PLAY_MUSIC);
         filter.addAction(Constant.ACTION_PAUSE_MUSIC);
+        filter.addAction(Constant.ACTION_SEEK_MUSIC);
         registerReceiver(mMusicReceiver, filter);
     }
 
@@ -216,6 +216,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         onPlayStateChanged(true, music);
     }
 
+    private void seekMusic(int seekPositionDuration) {
+        if (mMusicServer != null) {
+            mMusicServer.requestSetCurrentPosition(seekPositionDuration);
+        }
+        // 1.让 MediaPlayer执行
+        if (mMusicServer != null) {
+            mMusicServer.requestPlayMusic(mSelectedMusic);
+        }
+        // 2.把选中歌曲的信息同步到底部栏
+        onMusicSelected(mSelectedMusic);
+        //3.把播放状态同步到底部栏
+        onPlayStateChanged(true, mSelectedMusic);
+    }
+
     public void pauseMusic(Music music) {
         // 1.让MediaPlayer执行暂停
         if (mMusicServer != null) {
@@ -305,6 +319,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         break;
                     case Constant.ACTION_PAUSE_MUSIC:
                         pauseMusic(mSelectedMusic);
+                        break;
+                    case Constant.ACTION_SEEK_MUSIC:
+                        int seekDuration = intent.getIntExtra(Constant.EXTRA_MUSIC_CURRENT_DURATION, 0);
+                        if (mSelectedMusic != null) {
+                            seekMusic(seekDuration);
+                        }
+                        break;
+                    default:
                         break;
                 }
             }

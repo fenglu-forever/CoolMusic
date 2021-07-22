@@ -54,6 +54,7 @@ public class MusicService extends Service {
         Intent intent = new Intent(Constant.ACTION_UPDATE_PROGRESS);
         int progress = 100 * mPlayer.getCurrentPosition() / mPlayer.getDuration();
         intent.putExtra(Constant.EXTRA_MUSIC_PROGRESS, progress);
+        intent.putExtra(Constant.EXTRA_MUSIC_CURRENT_DURATION, mPlayer.getCurrentPosition());
         sendBroadcast(intent);
     }
 

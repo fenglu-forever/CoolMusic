@@ -71,6 +71,7 @@
         android:textSize="15sp" />
 
     <SeekBar
+        android:id="@+id/sekbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="-10dp"
@@ -86,12 +87,14 @@
         android:layout_marginBottom="12dp">
 
         <TextView
+            android:id="@+id/tvCurrentDuration"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="00:00"
             android:textColor="@color/music_detail_gray" />
 
         <TextView
+            android:id="@+id/tvTotalDuration"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"

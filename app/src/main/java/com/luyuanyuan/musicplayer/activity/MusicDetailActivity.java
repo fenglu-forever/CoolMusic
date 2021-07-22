@@ -59,6 +59,7 @@ public class MusicDetailActivity extends AppCompatActivity implements View.OnCli
         mReceiver = new UpdateMusicBroadcastReceiver();
         IntentFilter filter = new IntentFilter();
         filter.addAction(Constant.ACTION_UPDATE_MUSIC);
+        filter.addAction(Constant.ACTION_UPDATE_PROGRESS);
         registerReceiver(mReceiver, filter);
     }
 
@@ -184,8 +185,15 @@ public class MusicDetailActivity extends AppCompatActivity implements View.OnCli
             switch (action) {
                 case Constant.ACTION_UPDATE_MUSIC:
                     mSelectedMusic = (Music) intent.getSerializableExtra(Constant.EXTRA_MUSIC);
+                    bindData();
                     SongFragment songFragment = (SongFragment) mFragmentList.get(0);
                     songFragment.updateSelectedMusic(mSelectedMusic);
+                    break;
+                case Constant.ACTION_UPDATE_PROGRESS:
+                    int progress = intent.getIntExtra(Constant.EXTRA_MUSIC_PROGRESS, 0);
+                    int currentDuration = intent.getIntExtra(Constant.EXTRA_MUSIC_CURRENT_DURATION, 0);
+                    SongFragment songFrag = (SongFragment) mFragmentList.get(0);
+                    songFrag.updateMusicProgress(progress, currentDuration);
                     break;
                 default:
                     break;

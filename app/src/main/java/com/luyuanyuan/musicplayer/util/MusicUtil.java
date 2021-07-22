@@ -50,6 +50,28 @@ public class MusicUtil {
     public static Uri getAlbumPicUri(long album_id) {
         return ContentUris.withAppendedId(albumArtUri, album_id);
     }
+
+    public static String getMusicDuration(int duration) {
+        int sec = duration / 1000;
+        int min = 0;
+        if (sec >= 60) {
+            min = sec / 60;
+        }
+        sec = sec - min * 60;
+        String minuteStr;
+        String secondStr;
+        if (min < 10) {
+            minuteStr = "0" + min;
+        } else {
+            minuteStr = min + "";
+        }
+        if (sec < 10) {
+            secondStr = "0" + sec;
+        } else {
+            secondStr = sec + "";
+        }
+        return minuteStr + ":" + secondStr;
+    }
 }
 
 

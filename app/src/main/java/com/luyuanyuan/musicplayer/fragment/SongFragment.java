@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -29,6 +30,12 @@ public class SongFragment extends Fragment implements View.OnClickListener {
     private ImageView btnPlayerOrPause;
     private ImageView btnPrevious;
     private ImageView btnNext;
+    private TextView tvCurrentDuration;
+    private TextView tvTotalDuration;
+    private int mProgress;
+    private int mCurrentDuration;
+    private SeekBar mSeekBar;
+    private boolean isTouchSeekBar;
 
     @Nullable
     @Override
@@ -42,6 +49,7 @@ public class SongFragment extends Fragment implements View.OnClickListener {
         initViews();
         initListeners();
         updateSelectedMusic(mSelectedMusic);
+        updateMusicProgress(mProgress, mCurrentDuration);
     }
 
     private void initViews() {
@@ -58,12 +66,38 @@ public class SongFragment extends Fragment implements View.OnClickListener {
         btnPlayerOrPause = rootView.findViewById(R.id.btnPlayOrPause);
         btnPrevious = rootView.findViewById(R.id.btnPrevious);
         btnNext = rootView.findViewById(R.id.btnNext);
+        tvCurrentDuration = rootView.findViewById(R.id.tvCurrentDuration);
+        tvTotalDuration = rootView.findViewById(R.id.tvTotalDuration);
+        mSeekBar = rootView.findViewById(R.id.sekbar);
     }
 
     private void initListeners() {
         btnPlayerOrPause.setOnClickListener(this);
         btnNext.setOnClickListener(this);
         btnPrevious.setOnClickListener(this);
+        mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (mSelectedMusic != null) {
+                    mProgress = progress;
+                    mCurrentDuration = mSelectedMusic.getDuration() * mProgress / 100;
+                    tvCurrentDuration.setText(MusicUtil.getMusicDuration(mCurrentDuration));
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                isTouchSeekBar = true;
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                isTouchSeekBar = false;
+                Intent intent = new Intent(Constant.ACTION_SEEK_MUSIC);
+                intent.putExtra(Constant.EXTRA_MUSIC_CURRENT_DURATION, mCurrentDuration);
+                getActivity().sendBroadcast(intent);
+            }
+        });
     }
 
     public void updateSelectedMusic(Music selectedMusic) {
@@ -83,6 +117,21 @@ public class SongFragment extends Fragment implements View.OnClickListener {
         } else {
             btnPlayerOrPause.setImageResource(R.drawable.ic_music_detail_pause);
         }
+        tvTotalDuration.setText(MusicUtil.getMusicDuration(mSelectedMusic.getDuration()));
+    }
+
+    public void updateMusicProgress(int progress, int currentDuration) {
+        if (isTouchSeekBar) {
+            return;
+        }
+        mProgress = progress;
+        mCurrentDuration = currentDuration;
+        if (getView() == null || mSelectedMusic == null) {
+            return;
+        }
+        mSeekBar.setProgress(progress);
+        tvCurrentDuration.setText(MusicUtil.getMusicDuration(currentDuration));
+
     }
 
     @Override
