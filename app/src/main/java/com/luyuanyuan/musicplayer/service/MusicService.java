@@ -33,7 +33,7 @@ public class MusicService extends Service {
         mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                Intent intent = new Intent(Constant.ACTION_NEXT_MUSIC);
+                Intent intent = new Intent(Constant.ACTION_MUSIC_PLAY_COMPLETE);
                 sendBroadcast(intent);
             }
         });

@@ -73,7 +73,7 @@
     <SeekBar
         android:id="@+id/sekbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="18dp"
         android:layout_marginStart="-10dp"
         android:layout_marginEnd="-10dp"
         android:maxHeight="3dp"
@@ -83,7 +83,6 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
         android:layout_marginBottom="12dp">
 
         <TextView

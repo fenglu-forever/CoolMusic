@@ -17,5 +17,15 @@ public class Constant {
 
     public static final String EXTRA_MUSIC_CURRENT_DURATION = "extra_music_current_duration";
 
+    public static final String ACTION_MUSIC_PLAY_COMPLETE = "com.luyuanyuan.musicplayer.intent.ACTION_MUSIC_PLAY_COMPLETE";
+
     public static final String EXTRA_MUSIC = "extra_music";
+
+
+    public static final int PLAY_MODE_SEQUENCE = 0;
+    public static final int PLAY_MODE_SINGLE = 1;
+    public static final int PLAY_MODE_RANDOM = 2;
+
+
+    public static final String PREF_KEY_PLAY_MODE = "pref_key_play_mode";
 }

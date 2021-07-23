@@ -32,6 +32,7 @@ import com.luyuanyuan.musicplayer.service.MusicService;
 import com.luyuanyuan.musicplayer.ui.PlayOrPauseView;
 import com.luyuanyuan.musicplayer.util.Constant;
 import com.luyuanyuan.musicplayer.util.MusicUtil;
+import com.luyuanyuan.musicplayer.util.PreferenceUtil;
 import com.luyuanyuan.musicplayer.util.UiUtil;
 
 import java.util.ArrayList;
@@ -88,6 +89,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         filter.addAction(Constant.ACTION_PLAY_MUSIC);
         filter.addAction(Constant.ACTION_PAUSE_MUSIC);
         filter.addAction(Constant.ACTION_SEEK_MUSIC);
+        filter.addAction(Constant.ACTION_MUSIC_PLAY_COMPLETE);
         registerReceiver(mMusicReceiver, filter);
     }
 
@@ -230,6 +232,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         onPlayStateChanged(true, mSelectedMusic);
     }
 
+    private void onMusicPlayCompleted() {
+        int playMode = PreferenceUtil.getInt(Constant.PREF_KEY_PLAY_MODE, Constant.PLAY_MODE_SEQUENCE);
+        switch (playMode) {
+            case Constant.PLAY_MODE_SEQUENCE:
+                nextMusic();
+                break;
+            case Constant.PLAY_MODE_SINGLE:
+                if (mSelectedMusic != null) {
+                    seekMusic(0);
+                }
+                break;
+            case Constant.PLAY_MODE_RANDOM:
+                randomMusic();
+                break;
+            default:
+                break;
+        }
+    }
+
     public void pauseMusic(Music music) {
         // 1.让MediaPlayer执行暂停
         if (mMusicServer != null) {
@@ -243,6 +264,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Music nextMusic = mFragmentList.get(mViewPager.getCurrentItem()).getNextMusic();
         if (nextMusic != null) {
             playMusic(nextMusic);
+        }
+    }
+
+    private void randomMusic() {
+        Music randomMusic = mFragmentList.get(mViewPager.getCurrentItem()).getRandomMusic();
+        if (randomMusic != null) {
+            mSelectedMusic = randomMusic;
+            seekMusic(0);
         }
     }
 
@@ -291,6 +320,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.selectedMusicImg:
                 Intent intent = new Intent(this, MusicDetailActivity.class);
+                int currentDuration = 0;
+                if (mSelectedMusic != null) {
+                    currentDuration = mSelectedMusic.getDuration() * btnPlayOrPause.getProgress() / 100;
+                }
+                intent.putExtra(Constant.EXTRA_MUSIC_CURRENT_DURATION, currentDuration);
+                intent.putExtra(Constant.EXTRA_MUSIC_PROGRESS, btnPlayOrPause.getProgress());
                 intent.putExtra(Constant.EXTRA_MUSIC, mSelectedMusic);
                 startActivity(intent);
                 overridePendingTransition(R.anim.muisc_detail_enter, 0);
@@ -325,6 +360,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         if (mSelectedMusic != null) {
                             seekMusic(seekDuration);
                         }
+                        break;
+                    case Constant.ACTION_MUSIC_PLAY_COMPLETE:
+                        onMusicPlayCompleted();
                         break;
                     default:
                         break;

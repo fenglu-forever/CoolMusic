@@ -1,6 +1,7 @@
 package com.luyuanyuan.musicplayer.fragment;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,11 +15,15 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.google.android.material.card.MaterialCardView;
 import com.luyuanyuan.musicplayer.R;
+import com.luyuanyuan.musicplayer.activity.MusicDetailActivity;
 import com.luyuanyuan.musicplayer.entity.Music;
 import com.luyuanyuan.musicplayer.util.Constant;
 import com.luyuanyuan.musicplayer.util.MusicUtil;
+import com.luyuanyuan.musicplayer.util.PreferenceUtil;
 import com.luyuanyuan.musicplayer.util.UiUtil;
 
 public class SongFragment extends Fragment implements View.OnClickListener {
@@ -35,7 +40,9 @@ public class SongFragment extends Fragment implements View.OnClickListener {
     private int mProgress;
     private int mCurrentDuration;
     private SeekBar mSeekBar;
+    private ImageView ivPlayMode;
     private boolean isTouchSeekBar;
+    private int[] mPlayModeArray = {Constant.PLAY_MODE_SEQUENCE, Constant.PLAY_MODE_SINGLE, Constant.PLAY_MODE_RANDOM};
 
     @Nullable
     @Override
@@ -69,12 +76,31 @@ public class SongFragment extends Fragment implements View.OnClickListener {
         tvCurrentDuration = rootView.findViewById(R.id.tvCurrentDuration);
         tvTotalDuration = rootView.findViewById(R.id.tvTotalDuration);
         mSeekBar = rootView.findViewById(R.id.sekbar);
+        ivPlayMode = rootView.findViewById(R.id.ivPlayMode);
+        setPlayMode(PreferenceUtil.getInt(Constant.PREF_KEY_PLAY_MODE, Constant.PLAY_MODE_SEQUENCE));
+    }
+
+    private void setPlayMode(int playMode) {
+        switch (playMode) {
+            case Constant.PLAY_MODE_SEQUENCE:
+                ivPlayMode.setImageResource(R.drawable.ic_music_detail_play_mode_sequence);
+                break;
+            case Constant.PLAY_MODE_SINGLE:
+                ivPlayMode.setImageResource(R.drawable.ic_music_detail_play_mode_single);
+                break;
+            case Constant.PLAY_MODE_RANDOM:
+                ivPlayMode.setImageResource(R.drawable.ic_music_detail_play_mode_random);
+                break;
+            default:
+                break;
+        }
     }
 
     private void initListeners() {
         btnPlayerOrPause.setOnClickListener(this);
         btnNext.setOnClickListener(this);
         btnPrevious.setOnClickListener(this);
+        ivPlayMode.setOnClickListener(this);
         mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -151,6 +177,23 @@ public class SongFragment extends Fragment implements View.OnClickListener {
             case R.id.btnNext:
                 Intent intent = new Intent(Constant.ACTION_NEXT_MUSIC);
                 getActivity().sendBroadcast(intent);
+                break;
+            case R.id.ivPlayMode:
+                int playMode = PreferenceUtil.getInt(Constant.PREF_KEY_PLAY_MODE, Constant.PLAY_MODE_SEQUENCE);
+                int index = 0;
+                for (int i = 0; i < mPlayModeArray.length; i++) {
+                    if (mPlayModeArray[i] == playMode) {
+                        index = i;
+                        break;
+                    }
+                }
+                index++;
+                if (index >= mPlayModeArray.length) {
+                    index = 0;
+                }
+                playMode = mPlayModeArray[index];
+                PreferenceUtil.putInt(Constant.PREF_KEY_PLAY_MODE, playMode);
+                setPlayMode(playMode);
                 break;
             default:
                 break;

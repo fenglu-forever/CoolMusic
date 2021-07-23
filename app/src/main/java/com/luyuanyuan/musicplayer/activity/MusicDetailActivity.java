@@ -132,6 +132,9 @@ public class MusicDetailActivity extends AppCompatActivity implements View.OnCli
     private void initAdapters() {
         SongFragment songFragment = new SongFragment();
         songFragment.updateSelectedMusic(mSelectedMusic);
+        int progress = getIntent().getIntExtra(Constant.EXTRA_MUSIC_PROGRESS, 0);
+        int currentDuration = getIntent().getIntExtra(Constant.EXTRA_MUSIC_CURRENT_DURATION, 0);
+        songFragment.updateMusicProgress(progress, currentDuration);
         mFragmentList.add(songFragment);
         mFragmentList.add(new LyricFragment());
         mViewPager.setAdapter(new MusicDetailAdapter(getSupportFragmentManager(),

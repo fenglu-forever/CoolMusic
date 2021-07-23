@@ -17,12 +17,14 @@ import com.luyuanyuan.musicplayer.entity.Music;
 import com.luyuanyuan.musicplayer.util.MusicUtil;
 
 import java.util.List;
+import java.util.Random;
 
 
 public class MusicFragment extends BaseFragment {
     private ListView mMusicList;
     private MusicAdapter mAdapter;
     private int mSelectedPosition = -1;
+    private Random mRandom = new Random();
 
     @Nullable
     @Override
@@ -82,5 +84,23 @@ public class MusicFragment extends BaseFragment {
         mAdapter.notifyDataSetChanged();
         //
         return nexMusic;
+    }
+
+    @Override
+    public Music getRandomMusic() {
+        List<Music> musicList = mAdapter.getMusicList();
+        Music randomMusic = null;
+        if (musicList.size() > 0) {
+            int randomPosition = mRandom.nextInt(musicList.size());
+            // 保证只有一个处于选中状态
+            for (Music music : musicList) {
+                music.setSelected(false);
+            }
+            mSelectedPosition = randomPosition;
+            randomMusic = musicList.get(randomPosition);
+            randomMusic.setSelected(true);
+            mAdapter.notifyDataSetChanged();
+        }
+        return randomMusic;
     }
 }

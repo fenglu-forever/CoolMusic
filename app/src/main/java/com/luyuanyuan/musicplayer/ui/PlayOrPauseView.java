@@ -88,4 +88,8 @@ public class PlayOrPauseView extends View {
         mProgress = progress;
         invalidate();
     }
+
+    public int getProgress() {
+        return mProgress;
+    }
 }
