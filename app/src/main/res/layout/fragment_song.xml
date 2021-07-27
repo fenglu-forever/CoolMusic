@@ -54,6 +54,7 @@
         </LinearLayout>
 
         <ImageView
+            android:id="@+id/ivCollect"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_marginStart="24dp"

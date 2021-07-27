@@ -24,6 +24,11 @@ public class CollectFragment extends BaseFragment {
     }
 
     @Override
+    public Music getPreviousMusic() {
+        return null;
+    }
+
+    @Override
     public Music getRandomMusic() {
         return null;
     }

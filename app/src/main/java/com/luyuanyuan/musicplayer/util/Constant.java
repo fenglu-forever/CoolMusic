@@ -3,6 +3,8 @@ package com.luyuanyuan.musicplayer.util;
 public class Constant {
     public static final String ACTION_NEXT_MUSIC = "com.luyuanyuan.musicplayer.intent.ACTION_NEXT_MUSIC";
 
+    public static final String ACTION_PREVIOUS_MUSIC = "com.luyuanyuan.musicplayer.intent.ACTION_PREVIOUS_MUSIC";
+
     public static final String ACTION_PLAY_MUSIC = "com.luyuanyuan.musicplayer.intent.ACTION_PLAY_MUSIC";
 
     public static final String ACTION_PAUSE_MUSIC = "com.luyuanyuan.musicplayer.intent.ACTION_PAUSE_MUSIC";

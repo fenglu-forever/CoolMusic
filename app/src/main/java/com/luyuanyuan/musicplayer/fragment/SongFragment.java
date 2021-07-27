@@ -1,7 +1,6 @@
 package com.luyuanyuan.musicplayer.fragment;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,11 +14,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.target.SimpleTarget;
-import com.bumptech.glide.request.transition.Transition;
 import com.google.android.material.card.MaterialCardView;
 import com.luyuanyuan.musicplayer.R;
-import com.luyuanyuan.musicplayer.activity.MusicDetailActivity;
 import com.luyuanyuan.musicplayer.entity.Music;
 import com.luyuanyuan.musicplayer.util.Constant;
 import com.luyuanyuan.musicplayer.util.MusicUtil;
@@ -41,6 +37,7 @@ public class SongFragment extends Fragment implements View.OnClickListener {
     private int mCurrentDuration;
     private SeekBar mSeekBar;
     private ImageView ivPlayMode;
+    private ImageView ivCollect;
     private boolean isTouchSeekBar;
     private int[] mPlayModeArray = {Constant.PLAY_MODE_SEQUENCE, Constant.PLAY_MODE_SINGLE, Constant.PLAY_MODE_RANDOM};
 
@@ -78,6 +75,7 @@ public class SongFragment extends Fragment implements View.OnClickListener {
         mSeekBar = rootView.findViewById(R.id.sekbar);
         ivPlayMode = rootView.findViewById(R.id.ivPlayMode);
         setPlayMode(PreferenceUtil.getInt(Constant.PREF_KEY_PLAY_MODE, Constant.PLAY_MODE_SEQUENCE));
+        ivCollect = rootView.findViewById(R.id.ivCollect);
     }
 
     private void setPlayMode(int playMode) {
@@ -124,6 +122,7 @@ public class SongFragment extends Fragment implements View.OnClickListener {
                 getActivity().sendBroadcast(intent);
             }
         });
+        ivCollect.setOnClickListener(this);
     }
 
     public void updateSelectedMusic(Music selectedMusic) {
@@ -178,6 +177,10 @@ public class SongFragment extends Fragment implements View.OnClickListener {
                 Intent intent = new Intent(Constant.ACTION_NEXT_MUSIC);
                 getActivity().sendBroadcast(intent);
                 break;
+            case R.id.btnPrevious:
+                Intent intentPrevious = new Intent(Constant.ACTION_PREVIOUS_MUSIC);
+                getActivity().sendBroadcast(intentPrevious);
+                break;
             case R.id.ivPlayMode:
                 int playMode = PreferenceUtil.getInt(Constant.PREF_KEY_PLAY_MODE, Constant.PLAY_MODE_SEQUENCE);
                 int index = 0;
@@ -194,6 +197,11 @@ public class SongFragment extends Fragment implements View.OnClickListener {
                 playMode = mPlayModeArray[index];
                 PreferenceUtil.putInt(Constant.PREF_KEY_PLAY_MODE, playMode);
                 setPlayMode(playMode);
+                break;
+            case R.id.ivCollect:
+                if (mSelectedMusic != null) {
+                    MusicUtil.collectMusic(mSelectedMusic);
+                }
                 break;
             default:
                 break;

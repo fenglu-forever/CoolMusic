@@ -1,7 +1,9 @@
 package com.luyuanyuan.musicplayer.util;
 
 import android.content.ContentUris;
+import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.provider.MediaStore;
 
@@ -72,8 +74,52 @@ public class MusicUtil {
         }
         return minuteStr + ":" + secondStr;
     }
+
+    public static void collectMusic(Music music) {
+        MusicDataOpenHelper helper = new MusicDataOpenHelper(MusicPlayerApp.getAppContext());
+        SQLiteDatabase database = helper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("mediaId", music.getId());
+        values.put("name", music.getName());
+        values.put("artist", music.getArtist());
+        values.put("url", music.getUrl());
+        values.put("duration", music.getDuration());
+        values.put("size", music.getSize());
+        values.put("albumId", music.getAlbumId());
+        values.put("albumName", music.getAlbumName());
+        database.insert("Music", null, values);
+    }
+
+    public static List<Music> getCollectMusicList() {
+        List<Music> musicList = new ArrayList<>();
+        MusicDataOpenHelper helper = new MusicDataOpenHelper(MusicPlayerApp.getAppContext());
+        SQLiteDatabase database = helper.getReadableDatabase();
+        Cursor cursor = database.query("Music", null, null, null, null, null, null);
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                int id = cursor.getInt(cursor.getColumnIndex("mediaId"));
+                String name = cursor.getString(cursor.getColumnIndex("name"));
+                String artist = cursor.getString(cursor.getColumnIndex("artist"));
+                String url = cursor.getString(cursor.getColumnIndex("url"));
+                int duration = cursor.getInt(cursor.getColumnIndex("duration"));
+                int size = cursor.getInt(cursor.getColumnIndex("size"));
+                int albumId = cursor.getInt(cursor.getColumnIndex("albumId"));
+                String albumName = cursor.getString(cursor.getColumnIndex("albumName"));
+                Music music = new Music();
+                music.setId(id);
+                music.setName(name);
+                music.setArtist(artist);
+                music.setUrl(url);
+                music.setDuration(duration);
+                music.setSize(size);
+                music.setAlbumId(albumId);
+                music.setAlbumName(albumName);
+                musicList.add(music);
+            }
+            cursor.close();
+        }
+        return musicList;
+    }
 }
-
-
 
 

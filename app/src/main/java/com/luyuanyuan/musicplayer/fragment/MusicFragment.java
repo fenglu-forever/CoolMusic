@@ -70,20 +70,44 @@ public class MusicFragment extends BaseFragment {
 
     @Override
     public Music getNextMusic() {
-        mSelectedPosition++;
         List<Music> musicList = mAdapter.getMusicList();
-        if (mSelectedPosition >= musicList.size()) {
-            mSelectedPosition = 0;
+        Music nextMusic = null;
+        if (musicList.size() > 0) {
+            mSelectedPosition++;
+            mSelectedPosition++;
+            if (mSelectedPosition >= musicList.size()) {
+                mSelectedPosition = 0;
+            }
+            // 为了让音乐列表刷新到next的选中状态
+            for (Music music : musicList) {
+                music.setSelected(false);
+            }
+            nextMusic = musicList.get(mSelectedPosition);
+            nextMusic.setSelected(true);
+            mAdapter.notifyDataSetChanged();
+            mMusicList.smoothScrollToPosition(mSelectedPosition);
         }
-        // 为了让音乐列表刷新到next的选中状态
-        for (Music music : musicList) {
-            music.setSelected(false);
+        return nextMusic;
+    }
+
+    @Override
+    public Music getPreviousMusic() {
+        List<Music> musicList = mAdapter.getMusicList();
+        Music previousMusic = null;
+        if (musicList.size() > 0) {
+            mSelectedPosition--;
+            if (mSelectedPosition < 0) {
+                mSelectedPosition = musicList.size() - 1;
+            }
+            for (Music music : musicList) {
+                music.setSelected(false);
+            }
+            previousMusic = musicList.get(mSelectedPosition);
+            previousMusic.setSelected(true);
+            mAdapter.notifyDataSetChanged();
+            mMusicList.smoothScrollToPosition(mSelectedPosition);
         }
-        Music nexMusic = musicList.get(mSelectedPosition);
-        nexMusic.setSelected(true);
-        mAdapter.notifyDataSetChanged();
-        //
-        return nexMusic;
+        return previousMusic;
     }
 
     @Override
@@ -100,6 +124,7 @@ public class MusicFragment extends BaseFragment {
             randomMusic = musicList.get(randomPosition);
             randomMusic.setSelected(true);
             mAdapter.notifyDataSetChanged();
+            mMusicList.smoothScrollToPosition(mSelectedPosition);
         }
         return randomMusic;
     }

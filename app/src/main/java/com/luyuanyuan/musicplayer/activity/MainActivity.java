@@ -85,6 +85,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mMusicReceiver = new MusicBroadcastReceiver();
         IntentFilter filter = new IntentFilter();
         filter.addAction(Constant.ACTION_NEXT_MUSIC);
+        filter.addAction(Constant.ACTION_PREVIOUS_MUSIC);
         filter.addAction(Constant.ACTION_UPDATE_PROGRESS);
         filter.addAction(Constant.ACTION_PLAY_MUSIC);
         filter.addAction(Constant.ACTION_PAUSE_MUSIC);
@@ -267,6 +268,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    private void previousMusic() {
+        Music previousMusic = mFragmentList.get(mViewPager.getCurrentItem()).getPreviousMusic();
+        if (previousMusic != null) {
+            playMusic(previousMusic);
+        }
+    }
+
     private void randomMusic() {
         Music randomMusic = mFragmentList.get(mViewPager.getCurrentItem()).getRandomMusic();
         if (randomMusic != null) {
@@ -344,6 +352,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 switch (action) {
                     case Constant.ACTION_NEXT_MUSIC:
                         nextMusic();
+                        break;
+                    case Constant.ACTION_PREVIOUS_MUSIC:
+                        previousMusic();
                         break;
                     case Constant.ACTION_UPDATE_PROGRESS:
                         int progress = intent.getIntExtra(Constant.EXTRA_MUSIC_PROGRESS, 0);
