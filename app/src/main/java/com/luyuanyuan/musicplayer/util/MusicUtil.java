@@ -75,7 +75,7 @@ public class MusicUtil {
         return minuteStr + ":" + secondStr;
     }
 
-    public static void collectMusic(Music music) {
+    public static long collectMusic(Music music) {
         MusicDataOpenHelper helper = new MusicDataOpenHelper(MusicPlayerApp.getAppContext());
         SQLiteDatabase database = helper.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -87,7 +87,27 @@ public class MusicUtil {
         values.put("size", music.getSize());
         values.put("albumId", music.getAlbumId());
         values.put("albumName", music.getAlbumName());
-        database.insert("Music", null, values);
+        // insert方法会返回被添数据在数据表里的id，如果为-1代表添加失败，否则成功
+        return database.insert("Music", null, values);
+    }
+
+    public static int cancelCollectMusic(Music music) {
+        MusicDataOpenHelper helper = new MusicDataOpenHelper(MusicPlayerApp.getAppContext());
+        SQLiteDatabase database = helper.getWritableDatabase();
+        // delete方法会返回删除的数量，如果为0代表删除失败，否则成功
+        return database.delete("Music", "mediaId = ?", new String[]{music.getId() + ""});
+    }
+
+    public static boolean isCollect(Music music) {
+        MusicDataOpenHelper helper = new MusicDataOpenHelper(MusicPlayerApp.getAppContext());
+        SQLiteDatabase database = helper.getReadableDatabase();
+        Cursor cursor = database.query("Music", new String[]{"mediaId"}, "mediaId = ?", new String[]{music.getId() + ""}, null, null, null);
+        boolean isCollect = false;
+        if (cursor != null) {
+            isCollect = cursor.getCount() > 0;
+            cursor.close();
+        }
+        return isCollect;
     }
 
     public static List<Music> getCollectMusicList() {

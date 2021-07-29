@@ -1,35 +1,13 @@
 package com.luyuanyuan.musicplayer.fragment;
 
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import com.luyuanyuan.musicplayer.R;
 import com.luyuanyuan.musicplayer.entity.Music;
+import com.luyuanyuan.musicplayer.util.MusicUtil;
 
-public class CollectFragment extends BaseFragment {
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_collect, container, false);
-    }
+import java.util.List;
 
+public class CollectFragment extends MusicListFragment {
     @Override
-    public Music getNextMusic() {
-        return null;
-    }
-
-    @Override
-    public Music getPreviousMusic() {
-        return null;
-    }
-
-    @Override
-    public Music getRandomMusic() {
-        return null;
+    public List<Music> loadMusicList() {
+        return MusicUtil.getCollectMusicList();
     }
 }

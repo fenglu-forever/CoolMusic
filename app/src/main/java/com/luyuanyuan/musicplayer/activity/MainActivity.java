@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TextView mSelectedMusicText;
     private PlayOrPauseView btnPlayOrPause;
     private ImageView btnNext;
+    private ImageView ivBack;
 
     private Music mSelectedMusic;
     private ObjectAnimator mRotateAnim;
@@ -137,6 +138,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mSelectedMusicText = findViewById(R.id.selectedMusicText);
         btnPlayOrPause = findViewById(R.id.btnPlayOrPause);
         btnNext = findViewById(R.id.btnNext);
+        ivBack = findViewById(R.id.ivBack);
     }
 
     private void initListeners() {
@@ -189,6 +191,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btnPlayOrPause.setOnClickListener(this);
         btnNext.setOnClickListener(this);
         mSelectedMusicImg.setOnClickListener(this);
+        ivBack.setOnClickListener(this);
     }
 
     private void initAdapters() {
@@ -337,6 +340,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 intent.putExtra(Constant.EXTRA_MUSIC, mSelectedMusic);
                 startActivity(intent);
                 overridePendingTransition(R.anim.muisc_detail_enter, 0);
+                break;
+            case R.id.ivBack:
+                finish();
                 break;
             default:
                 break;
