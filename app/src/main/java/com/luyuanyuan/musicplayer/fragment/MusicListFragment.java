@@ -65,7 +65,19 @@ public abstract class MusicListFragment extends BaseFragment {
     }
 
     private void initAdapters() {
-        mAdapter = new MusicAdapter(getActivity(), loadMusicList());
+        List<Music> musicList = loadMusicList();
+        MainActivity activity = (MainActivity) getActivity();
+        Music selMusic = activity.getSelectedMusic();
+        if (selMusic != null) {
+            for (Music music : musicList) {
+                if (music.getId() == selMusic.getId()) {
+                    music.setSelected(selMusic.isSelected());
+                    music.setPlaying(selMusic.isPlaying());
+                    break;
+                }
+            }
+        }
+        mAdapter = new MusicAdapter(getActivity(), musicList);
         mMusicList.setAdapter(mAdapter);
         tvMusicNumber.setText(mAdapter.getCount() + "首");
     }

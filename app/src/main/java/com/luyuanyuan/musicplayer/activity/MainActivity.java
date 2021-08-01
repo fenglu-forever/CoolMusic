@@ -202,7 +202,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void playMusic(Music music) {
-        if (mSelectedMusic != music) {
+        if (mSelectedMusic == null || mSelectedMusic.getId() != music.getId()) {
             mRotateAnim.cancel();
             if (mMusicServer != null) {
                 mMusicServer.requestSetCurrentPosition(0);
@@ -347,6 +347,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             default:
                 break;
         }
+    }
+
+    public Music getSelectedMusic() {
+        return mSelectedMusic;
     }
 
     private class MusicBroadcastReceiver extends BroadcastReceiver {
