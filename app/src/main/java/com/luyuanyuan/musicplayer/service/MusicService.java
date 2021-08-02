@@ -92,5 +92,9 @@ public class MusicService extends Service {
         public void requestSetCurrentPosition(int position) {
             mCurrentPosition = position;
         }
+
+        public int requestPlayingPosition() {
+            return mPlayer.getCurrentPosition();
+        }
     }
 }

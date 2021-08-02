@@ -310,6 +310,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             mRotateAnim.pause();
         }
         Intent intent = new Intent(Constant.ACTION_UPDATE_MUSIC);
+        int currentDuration = 0;
+        if (mMusicServer != null) {
+            currentDuration = mMusicServer.requestPlayingPosition();
+        }
+        intent.putExtra(Constant.EXTRA_MUSIC_CURRENT_DURATION, currentDuration);
         intent.putExtra(Constant.EXTRA_MUSIC, music);
         sendBroadcast(intent);
     }
@@ -332,8 +337,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.selectedMusicImg:
                 Intent intent = new Intent(this, MusicDetailActivity.class);
                 int currentDuration = 0;
-                if (mSelectedMusic != null) {
-                    currentDuration = mSelectedMusic.getDuration() * btnPlayOrPause.getProgress() / 100;
+                if (mMusicServer != null) {
+                    currentDuration = mMusicServer.requestPlayingPosition();
                 }
                 intent.putExtra(Constant.EXTRA_MUSIC_CURRENT_DURATION, currentDuration);
                 intent.putExtra(Constant.EXTRA_MUSIC_PROGRESS, btnPlayOrPause.getProgress());

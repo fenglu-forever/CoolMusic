@@ -4,11 +4,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RadioGroup;
@@ -25,12 +23,12 @@ import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.luyuanyuan.musicplayer.R;
 import com.luyuanyuan.musicplayer.adapter.MusicDetailAdapter;
-import com.luyuanyuan.musicplayer.app.MusicPlayerApp;
+import com.luyuanyuan.musicplayer.entity.Lyric;
 import com.luyuanyuan.musicplayer.entity.Music;
 import com.luyuanyuan.musicplayer.fragment.LyricFragment;
 import com.luyuanyuan.musicplayer.fragment.SongFragment;
 import com.luyuanyuan.musicplayer.util.Constant;
-import com.luyuanyuan.musicplayer.util.MusicDataOpenHelper;
+import com.luyuanyuan.musicplayer.util.LyricHelper;
 import com.luyuanyuan.musicplayer.util.MusicUtil;
 import com.luyuanyuan.musicplayer.util.UiUtil;
 
@@ -45,11 +43,26 @@ public class MusicDetailActivity extends AppCompatActivity implements View.OnCli
     private Music mSelectedMusic;
     private List<Fragment> mFragmentList = new ArrayList<>();
     private BroadcastReceiver mReceiver;
+    private LyricHelper mHelper;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activty_music_detail);
+        mHelper = new LyricHelper();
+        mHelper.setCallback(new LyricHelper.Callback() {
+            @Override
+            public void onLyricChange(@Nullable Lyric lyric) {
+                SongFragment songFragment = (SongFragment) mFragmentList.get(0);
+                songFragment.updateLyric(lyric);
+            }
+
+            @Override
+            public void onLineUpdate(@NonNull Lyric.Line line) {
+                SongFragment songFragment = (SongFragment) mFragmentList.get(0);
+                songFragment.updateLine(line);
+            }
+        });
         mSelectedMusic = (Music) getIntent().getSerializableExtra(Constant.EXTRA_MUSIC);
         initViews();
         initListeners();
@@ -70,6 +83,7 @@ public class MusicDetailActivity extends AppCompatActivity implements View.OnCli
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(mReceiver);
+        mHelper.stop();
     }
 
     @Override
@@ -143,6 +157,13 @@ public class MusicDetailActivity extends AppCompatActivity implements View.OnCli
         mViewPager.setAdapter(new MusicDetailAdapter(getSupportFragmentManager(),
                 FragmentPagerAdapter.BEHAVIOR_SET_USER_VISIBLE_HINT,
                 mFragmentList));
+        if (mSelectedMusic != null) {
+            mHelper.setMusic(mSelectedMusic);
+            mHelper.start(currentDuration);
+            if (!mSelectedMusic.isPlaying()) {
+                mHelper.stop();
+            }
+        }
     }
 
     private void bindData() {
@@ -190,10 +211,22 @@ public class MusicDetailActivity extends AppCompatActivity implements View.OnCli
             String action = intent.getAction();
             switch (action) {
                 case Constant.ACTION_UPDATE_MUSIC:
-                    mSelectedMusic = (Music) intent.getSerializableExtra(Constant.EXTRA_MUSIC);
-                    bindData();
-                    SongFragment songFragment = (SongFragment) mFragmentList.get(0);
-                    songFragment.updateSelectedMusic(mSelectedMusic);
+                    Music music = (Music) intent.getSerializableExtra(Constant.EXTRA_MUSIC);
+                    if (music != null) {
+                        if (mSelectedMusic == null || mSelectedMusic.getId() != music.getId()) {
+                            mHelper.setMusic(music);
+                        }
+                        mSelectedMusic = music;
+                        if (mSelectedMusic.isPlaying()) {
+                            int currentDuration = intent.getIntExtra(Constant.EXTRA_MUSIC_CURRENT_DURATION, 0);
+                            mHelper.start(currentDuration);
+                        } else {
+                            mHelper.stop();
+                        }
+                        bindData();
+                        SongFragment songFragment = (SongFragment) mFragmentList.get(0);
+                        songFragment.updateSelectedMusic(mSelectedMusic);
+                    }
                     break;
                 case Constant.ACTION_UPDATE_PROGRESS:
                     int progress = intent.getIntExtra(Constant.EXTRA_MUSIC_PROGRESS, 0);
