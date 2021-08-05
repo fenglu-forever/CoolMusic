@@ -3,6 +3,7 @@ package com.luyuanyuan.musicplayer.fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,8 +18,10 @@ import androidx.fragment.app.Fragment;
 import com.bumptech.glide.Glide;
 import com.google.android.material.card.MaterialCardView;
 import com.luyuanyuan.musicplayer.R;
+import com.luyuanyuan.musicplayer.activity.MusicDetailActivity;
 import com.luyuanyuan.musicplayer.entity.Lyric;
 import com.luyuanyuan.musicplayer.entity.Music;
+import com.luyuanyuan.musicplayer.ui.LyricTextView;
 import com.luyuanyuan.musicplayer.util.Constant;
 import com.luyuanyuan.musicplayer.util.MusicUtil;
 import com.luyuanyuan.musicplayer.util.PreferenceUtil;
@@ -35,7 +38,7 @@ public class SongFragment extends Fragment implements View.OnClickListener {
     private ImageView btnNext;
     private TextView tvCurrentDuration;
     private TextView tvTotalDuration;
-    private TextView tvLyric;
+    private LyricTextView mLyricTextView;
     private int mProgress;
     private int mCurrentDuration;
     private SeekBar mSeekBar;
@@ -45,6 +48,7 @@ public class SongFragment extends Fragment implements View.OnClickListener {
     private int[] mPlayModeArray = {Constant.PLAY_MODE_SEQUENCE, Constant.PLAY_MODE_SINGLE, Constant.PLAY_MODE_RANDOM};
     private Lyric mLyric;
     private Lyric.Line mLine;
+    private int mPlayingPosition;
 
     @Nullable
     @Override
@@ -61,6 +65,7 @@ public class SongFragment extends Fragment implements View.OnClickListener {
         updateMusicProgress(mProgress, mCurrentDuration);
         updateLyric(mLyric);
         updateLine(mLine);
+        updatePlayingPosition(mPlayingPosition);
     }
 
     private void initViews() {
@@ -83,7 +88,7 @@ public class SongFragment extends Fragment implements View.OnClickListener {
         ivPlayMode = rootView.findViewById(R.id.ivPlayMode);
         setPlayMode(PreferenceUtil.getInt(Constant.PREF_KEY_PLAY_MODE, Constant.PLAY_MODE_SEQUENCE));
         ivCollect = rootView.findViewById(R.id.ivCollect);
-        tvLyric = rootView.findViewById(R.id.tvLyric);
+        mLyricTextView = rootView.findViewById(R.id.lyricTextView);
     }
 
     private void setPlayMode(int playMode) {
@@ -110,10 +115,15 @@ public class SongFragment extends Fragment implements View.OnClickListener {
         mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (!fromUser) {
+                    return;
+                }
                 if (mSelectedMusic != null) {
                     mProgress = progress;
                     mCurrentDuration = mSelectedMusic.getDuration() * mProgress / 100;
                     tvCurrentDuration.setText(MusicUtil.getMusicDuration(mCurrentDuration));
+                    MusicDetailActivity detailActivity = (MusicDetailActivity) getActivity();
+                    detailActivity.updateLine(mCurrentDuration);
                 }
             }
 
@@ -173,7 +183,7 @@ public class SongFragment extends Fragment implements View.OnClickListener {
             return;
         }
         if (mLyric == null) {
-            tvLyric.setText("暂无歌词信息");
+            mLyricTextView.setLyricLine(null);
         }
     }
 
@@ -182,7 +192,15 @@ public class SongFragment extends Fragment implements View.OnClickListener {
         if (mLine == null || getView() == null || TextUtils.isEmpty(line.getText())) {
             return;
         }
-        tvLyric.setText(mLine.getText());
+        mLyricTextView.setLyricLine(mLine);
+    }
+
+    public void updatePlayingPosition(int playingPosition) {
+        mPlayingPosition = playingPosition;
+        if (getView() == null) {
+            return;
+        }
+        mLyricTextView.setPlayingDuration(mPlayingPosition);
     }
 
     @Override

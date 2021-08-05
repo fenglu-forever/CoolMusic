@@ -61,15 +61,16 @@
             android:src="@drawable/selector_collect" />
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/tvLyric"
+    <com.luyuanyuan.musicplayer.ui.LyricTextView
+        android:id="@+id/lyricTextView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="10dp"
         android:layout_weight="1"
-        android:text="暂无歌词信息"
-        android:textColor="@color/music_detail_gray"
-        android:textSize="15sp" />
+        android:textSize="15sp"
+        app:backgroundTextColor="@color/music_detail_gray"
+        app:emptyText="暂无歌词信息"
+        app:foregroundTextColor="@color/music_detail_white" />
 
     <SeekBar
         android:id="@+id/sekbar"

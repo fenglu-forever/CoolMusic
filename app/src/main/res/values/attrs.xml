@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="LyricTextView">
+        <attr name="emptyText" format="string" />
+        <attr name="foregroundTextColor" format="color" />
+        <attr name="backgroundTextColor" format="color" />
+    </declare-styleable>
+</resources>

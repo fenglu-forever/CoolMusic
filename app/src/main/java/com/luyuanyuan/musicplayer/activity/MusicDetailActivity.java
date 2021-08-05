@@ -76,6 +76,7 @@ public class MusicDetailActivity extends AppCompatActivity implements View.OnCli
         IntentFilter filter = new IntentFilter();
         filter.addAction(Constant.ACTION_UPDATE_MUSIC);
         filter.addAction(Constant.ACTION_UPDATE_PROGRESS);
+        filter.addAction(Constant.ACTION_UPDATE_PLAYING_POSITION);
         registerReceiver(mReceiver, filter);
     }
 
@@ -152,6 +153,7 @@ public class MusicDetailActivity extends AppCompatActivity implements View.OnCli
         int progress = getIntent().getIntExtra(Constant.EXTRA_MUSIC_PROGRESS, 0);
         int currentDuration = getIntent().getIntExtra(Constant.EXTRA_MUSIC_CURRENT_DURATION, 0);
         songFragment.updateMusicProgress(progress, currentDuration);
+        songFragment.updatePlayingPosition(currentDuration);
         mFragmentList.add(songFragment);
         mFragmentList.add(new LyricFragment());
         mViewPager.setAdapter(new MusicDetailAdapter(getSupportFragmentManager(),
@@ -201,6 +203,10 @@ public class MusicDetailActivity extends AppCompatActivity implements View.OnCli
         }
     }
 
+    public void updateLine(int startDuration) {
+        mHelper.start(startDuration);
+    }
+
     private class UpdateMusicBroadcastReceiver extends BroadcastReceiver {
 
         @Override
@@ -233,6 +239,11 @@ public class MusicDetailActivity extends AppCompatActivity implements View.OnCli
                     int currentDuration = intent.getIntExtra(Constant.EXTRA_MUSIC_CURRENT_DURATION, 0);
                     SongFragment songFrag = (SongFragment) mFragmentList.get(0);
                     songFrag.updateMusicProgress(progress, currentDuration);
+                    break;
+                case Constant.ACTION_UPDATE_PLAYING_POSITION:
+                    int playingPosition = intent.getIntExtra(Constant.EXTRA_MUSIC_CURRENT_DURATION, 0);
+                    SongFragment sFragment = (SongFragment) mFragmentList.get(0);
+                    sFragment.updatePlayingPosition(playingPosition);
                     break;
                 default:
                     break;

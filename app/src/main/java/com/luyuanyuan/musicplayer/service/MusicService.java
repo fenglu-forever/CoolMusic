@@ -15,14 +15,25 @@ import com.luyuanyuan.musicplayer.util.Constant;
 import java.io.IOException;
 
 public class MusicService extends Service {
+    private static final int DELAY_TIME_UPDATE_PROGRESS = 1000;
+    private static final int DELAY_TIME_UPDATE_PLAYING_POSITION = 60;
+
     private MediaPlayer mPlayer;
     private int mCurrentPosition;
     private Handler mHandler = new Handler();
     private Runnable mUpdateProgressTask = new Runnable() {
         @Override
         public void run() {
-            mHandler.postDelayed(this, 1000);
+            mHandler.postDelayed(this, DELAY_TIME_UPDATE_PROGRESS);
             notifyUpdateProgress();
+        }
+    };
+
+    private Runnable mUpdatePlyingPositionTask = new Runnable() {
+        @Override
+        public void run() {
+            mHandler.postDelayed(this, DELAY_TIME_UPDATE_PLAYING_POSITION);
+            notifyUpdatePlayingPosition();
         }
     };
 
@@ -48,12 +59,20 @@ public class MusicService extends Service {
             mPlayer.release();
         }
         mHandler.removeCallbacks(mUpdateProgressTask);
+
+        mHandler.removeCallbacks(mUpdatePlyingPositionTask);
     }
 
     private void notifyUpdateProgress() {
         Intent intent = new Intent(Constant.ACTION_UPDATE_PROGRESS);
         int progress = 100 * mPlayer.getCurrentPosition() / mPlayer.getDuration();
         intent.putExtra(Constant.EXTRA_MUSIC_PROGRESS, progress);
+        intent.putExtra(Constant.EXTRA_MUSIC_CURRENT_DURATION, mPlayer.getCurrentPosition());
+        sendBroadcast(intent);
+    }
+
+    private void notifyUpdatePlayingPosition() {
+        Intent intent = new Intent(Constant.ACTION_UPDATE_PLAYING_POSITION);
         intent.putExtra(Constant.EXTRA_MUSIC_CURRENT_DURATION, mPlayer.getCurrentPosition());
         sendBroadcast(intent);
     }
@@ -72,9 +91,14 @@ public class MusicService extends Service {
                 mPlayer.prepare();
                 mPlayer.seekTo(mCurrentPosition);
                 mPlayer.start();
+
                 mHandler.removeCallbacks(mUpdateProgressTask);
-                mHandler.postDelayed(mUpdateProgressTask, 1000);
+                mHandler.postDelayed(mUpdateProgressTask, DELAY_TIME_UPDATE_PROGRESS);
                 notifyUpdateProgress();
+
+                mHandler.removeCallbacks(mUpdatePlyingPositionTask);
+                mHandler.postDelayed(mUpdatePlyingPositionTask, DELAY_TIME_UPDATE_PLAYING_POSITION);
+                notifyUpdatePlayingPosition();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -84,7 +108,10 @@ public class MusicService extends Service {
             if (mPlayer.isPlaying()) {
                 mPlayer.pause();
                 mCurrentPosition = mPlayer.getCurrentPosition();
+
                 mHandler.removeCallbacks(mUpdateProgressTask);
+
+                mHandler.removeCallbacks(mUpdatePlyingPositionTask);
                 notifyUpdateProgress();
             }
         }

@@ -11,6 +11,8 @@ public class Constant {
 
     public static final String ACTION_UPDATE_PROGRESS = "com.luyuanyuan.musicplayer.intent.ACTION_UPDATE_PROGRESS";
 
+    public static final String ACTION_UPDATE_PLAYING_POSITION = "com.luyuanyuan.musicplayer.intent.ACTION_UPDATE_PLAYING_POSITION";
+
     public static final String ACTION_UPDATE_MUSIC = "com.luyuanyuan.musicplayer.intent.ACTION_UPDATE_MUSIC";
 
     public static final String ACTION_SEEK_MUSIC = "com.luyuanyuan.musicplayer.intent.ACTION_SEEK_MUSIC";
