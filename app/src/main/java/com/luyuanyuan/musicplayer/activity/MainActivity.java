@@ -30,6 +30,7 @@ import com.luyuanyuan.musicplayer.fragment.CollectFragment;
 import com.luyuanyuan.musicplayer.fragment.MusicFragment;
 import com.luyuanyuan.musicplayer.service.MusicService;
 import com.luyuanyuan.musicplayer.ui.PlayOrPauseView;
+import com.luyuanyuan.musicplayer.util.BroadcastUtil;
 import com.luyuanyuan.musicplayer.util.Constant;
 import com.luyuanyuan.musicplayer.util.MusicUtil;
 import com.luyuanyuan.musicplayer.util.PreferenceUtil;
@@ -92,11 +93,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         filter.addAction(Constant.ACTION_PAUSE_MUSIC);
         filter.addAction(Constant.ACTION_SEEK_MUSIC);
         filter.addAction(Constant.ACTION_MUSIC_PLAY_COMPLETE);
-        registerReceiver(mMusicReceiver, filter);
+        BroadcastUtil.subscribeBroadcast(mMusicReceiver, filter);
     }
 
     private void unregisterMusicBroadcast() {
-        unregisterReceiver(mMusicReceiver);
+        BroadcastUtil.unsubscribeBroadcast(mMusicReceiver);
     }
 
     private void bindMusicService() {
@@ -316,7 +317,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         intent.putExtra(Constant.EXTRA_MUSIC_CURRENT_DURATION, currentDuration);
         intent.putExtra(Constant.EXTRA_MUSIC, music);
-        sendBroadcast(intent);
+        BroadcastUtil.postBroadcast(intent);
     }
 
     @Override

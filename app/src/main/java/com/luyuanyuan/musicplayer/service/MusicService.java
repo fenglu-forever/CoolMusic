@@ -1,15 +1,24 @@
 package com.luyuanyuan.musicplayer.service;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Binder;
+import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
+import android.widget.RemoteViews;
 
 import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
 
+import com.luyuanyuan.musicplayer.R;
 import com.luyuanyuan.musicplayer.entity.Music;
+import com.luyuanyuan.musicplayer.util.BroadcastUtil;
 import com.luyuanyuan.musicplayer.util.Constant;
 
 import java.io.IOException;
@@ -17,6 +26,7 @@ import java.io.IOException;
 public class MusicService extends Service {
     private static final int DELAY_TIME_UPDATE_PROGRESS = 1000;
     private static final int DELAY_TIME_UPDATE_PLAYING_POSITION = 60;
+    private static final String MUSIC_CHANNEL = "music_channel";
 
     private MediaPlayer mPlayer;
     private int mCurrentPosition;
@@ -40,12 +50,13 @@ public class MusicService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        createNotificationChannel();
         mPlayer = new MediaPlayer();
         mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
                 Intent intent = new Intent(Constant.ACTION_MUSIC_PLAY_COMPLETE);
-                sendBroadcast(intent);
+                BroadcastUtil.postBroadcast(intent);
             }
         });
     }
@@ -68,13 +79,31 @@ public class MusicService extends Service {
         int progress = 100 * mPlayer.getCurrentPosition() / mPlayer.getDuration();
         intent.putExtra(Constant.EXTRA_MUSIC_PROGRESS, progress);
         intent.putExtra(Constant.EXTRA_MUSIC_CURRENT_DURATION, mPlayer.getCurrentPosition());
-        sendBroadcast(intent);
+        BroadcastUtil.postBroadcast(intent);
     }
 
     private void notifyUpdatePlayingPosition() {
         Intent intent = new Intent(Constant.ACTION_UPDATE_PLAYING_POSITION);
         intent.putExtra(Constant.EXTRA_MUSIC_CURRENT_DURATION, mPlayer.getCurrentPosition());
-        sendBroadcast(intent);
+        BroadcastUtil.postBroadcast(intent);
+    }
+
+    private void createNotificationChannel() {
+        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(MUSIC_CHANNEL, "音乐更新", NotificationManager.IMPORTANCE_DEFAULT);
+            manager.createNotificationChannel(channel);
+        }
+    }
+
+    private void updateMusicNotification(Music music) {
+        RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.music_notify);
+        remoteViews.setTextViewText(R.id.tvName, music.getName());
+        Notification notification = new NotificationCompat.Builder(this, MUSIC_CHANNEL)
+                .setSmallIcon(R.drawable.ic_default_music_album_pic)
+                .setCustomBigContentView(remoteViews)
+                .build();
+        startForeground(1, notification);
     }
 
     @Nullable
@@ -99,6 +128,8 @@ public class MusicService extends Service {
                 mHandler.removeCallbacks(mUpdatePlyingPositionTask);
                 mHandler.postDelayed(mUpdatePlyingPositionTask, DELAY_TIME_UPDATE_PLAYING_POSITION);
                 notifyUpdatePlayingPosition();
+
+                updateMusicNotification(music);
             } catch (IOException e) {
                 e.printStackTrace();
             }

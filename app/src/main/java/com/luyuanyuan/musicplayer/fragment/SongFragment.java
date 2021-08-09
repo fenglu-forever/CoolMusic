@@ -22,6 +22,7 @@ import com.luyuanyuan.musicplayer.activity.MusicDetailActivity;
 import com.luyuanyuan.musicplayer.entity.Lyric;
 import com.luyuanyuan.musicplayer.entity.Music;
 import com.luyuanyuan.musicplayer.ui.LyricTextView;
+import com.luyuanyuan.musicplayer.util.BroadcastUtil;
 import com.luyuanyuan.musicplayer.util.Constant;
 import com.luyuanyuan.musicplayer.util.MusicUtil;
 import com.luyuanyuan.musicplayer.util.PreferenceUtil;
@@ -137,7 +138,7 @@ public class SongFragment extends Fragment implements View.OnClickListener {
                 isTouchSeekBar = false;
                 Intent intent = new Intent(Constant.ACTION_SEEK_MUSIC);
                 intent.putExtra(Constant.EXTRA_MUSIC_CURRENT_DURATION, mCurrentDuration);
-                getActivity().sendBroadcast(intent);
+                BroadcastUtil.postBroadcast(intent);
             }
         });
         ivCollect.setOnClickListener(this);
@@ -214,16 +215,16 @@ public class SongFragment extends Fragment implements View.OnClickListener {
                     } else {
                         intent = new Intent(Constant.ACTION_PLAY_MUSIC);
                     }
-                    getActivity().sendBroadcast(intent);
+                    BroadcastUtil.postBroadcast(intent);
                 }
                 break;
             case R.id.btnNext:
                 Intent intent = new Intent(Constant.ACTION_NEXT_MUSIC);
-                getActivity().sendBroadcast(intent);
+                BroadcastUtil.postBroadcast(intent);
                 break;
             case R.id.btnPrevious:
                 Intent intentPrevious = new Intent(Constant.ACTION_PREVIOUS_MUSIC);
-                getActivity().sendBroadcast(intentPrevious);
+                BroadcastUtil.postBroadcast(intentPrevious);
                 break;
             case R.id.ivPlayMode:
                 int playMode = PreferenceUtil.getInt(Constant.PREF_KEY_PLAY_MODE, Constant.PLAY_MODE_SEQUENCE);
