@@ -3,7 +3,6 @@ package com.luyuanyuan.musicplayer.fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,7 +21,6 @@ import com.luyuanyuan.musicplayer.activity.MusicDetailActivity;
 import com.luyuanyuan.musicplayer.entity.Lyric;
 import com.luyuanyuan.musicplayer.entity.Music;
 import com.luyuanyuan.musicplayer.ui.LyricTextView;
-import com.luyuanyuan.musicplayer.util.BroadcastUtil;
 import com.luyuanyuan.musicplayer.util.Constant;
 import com.luyuanyuan.musicplayer.util.MusicUtil;
 import com.luyuanyuan.musicplayer.util.PreferenceUtil;
@@ -138,7 +136,7 @@ public class SongFragment extends Fragment implements View.OnClickListener {
                 isTouchSeekBar = false;
                 Intent intent = new Intent(Constant.ACTION_SEEK_MUSIC);
                 intent.putExtra(Constant.EXTRA_MUSIC_CURRENT_DURATION, mCurrentDuration);
-                BroadcastUtil.postBroadcast(intent);
+                getActivity().sendBroadcast(intent);
             }
         });
         ivCollect.setOnClickListener(this);
@@ -215,16 +213,16 @@ public class SongFragment extends Fragment implements View.OnClickListener {
                     } else {
                         intent = new Intent(Constant.ACTION_PLAY_MUSIC);
                     }
-                    BroadcastUtil.postBroadcast(intent);
+                    getActivity().sendBroadcast(intent);
                 }
                 break;
             case R.id.btnNext:
                 Intent intent = new Intent(Constant.ACTION_NEXT_MUSIC);
-                BroadcastUtil.postBroadcast(intent);
+                getActivity().sendBroadcast(intent);
                 break;
             case R.id.btnPrevious:
                 Intent intentPrevious = new Intent(Constant.ACTION_PREVIOUS_MUSIC);
-                BroadcastUtil.postBroadcast(intentPrevious);
+                getActivity().sendBroadcast(intentPrevious);
                 break;
             case R.id.ivPlayMode:
                 int playMode = PreferenceUtil.getInt(Constant.PREF_KEY_PLAY_MODE, Constant.PLAY_MODE_SEQUENCE);

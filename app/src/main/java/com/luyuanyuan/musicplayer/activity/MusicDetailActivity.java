@@ -27,7 +27,6 @@ import com.luyuanyuan.musicplayer.entity.Lyric;
 import com.luyuanyuan.musicplayer.entity.Music;
 import com.luyuanyuan.musicplayer.fragment.LyricFragment;
 import com.luyuanyuan.musicplayer.fragment.SongFragment;
-import com.luyuanyuan.musicplayer.util.BroadcastUtil;
 import com.luyuanyuan.musicplayer.util.Constant;
 import com.luyuanyuan.musicplayer.util.LyricHelper;
 import com.luyuanyuan.musicplayer.util.MusicUtil;
@@ -78,13 +77,13 @@ public class MusicDetailActivity extends AppCompatActivity implements View.OnCli
         filter.addAction(Constant.ACTION_UPDATE_MUSIC);
         filter.addAction(Constant.ACTION_UPDATE_PROGRESS);
         filter.addAction(Constant.ACTION_UPDATE_PLAYING_POSITION);
-        BroadcastUtil.subscribeBroadcast(mReceiver, filter);
+        registerReceiver(mReceiver, filter);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        BroadcastUtil.unsubscribeBroadcast(mReceiver);
+        unregisterReceiver(mReceiver);
         mHelper.stop();
     }
 

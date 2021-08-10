@@ -3,9 +3,12 @@ package com.luyuanyuan.musicplayer.service;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.Build;
@@ -13,13 +16,17 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.widget.RemoteViews;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.luyuanyuan.musicplayer.R;
 import com.luyuanyuan.musicplayer.entity.Music;
-import com.luyuanyuan.musicplayer.util.BroadcastUtil;
 import com.luyuanyuan.musicplayer.util.Constant;
+import com.luyuanyuan.musicplayer.util.MusicUtil;
 
 import java.io.IOException;
 
@@ -47,6 +54,8 @@ public class MusicService extends Service {
         }
     };
 
+    private Music mPlayingMusic;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -56,7 +65,7 @@ public class MusicService extends Service {
             @Override
             public void onCompletion(MediaPlayer mp) {
                 Intent intent = new Intent(Constant.ACTION_MUSIC_PLAY_COMPLETE);
-                BroadcastUtil.postBroadcast(intent);
+                sendBroadcast(intent);
             }
         });
     }
@@ -79,30 +88,53 @@ public class MusicService extends Service {
         int progress = 100 * mPlayer.getCurrentPosition() / mPlayer.getDuration();
         intent.putExtra(Constant.EXTRA_MUSIC_PROGRESS, progress);
         intent.putExtra(Constant.EXTRA_MUSIC_CURRENT_DURATION, mPlayer.getCurrentPosition());
-        BroadcastUtil.postBroadcast(intent);
+        sendBroadcast(intent);
     }
 
     private void notifyUpdatePlayingPosition() {
         Intent intent = new Intent(Constant.ACTION_UPDATE_PLAYING_POSITION);
         intent.putExtra(Constant.EXTRA_MUSIC_CURRENT_DURATION, mPlayer.getCurrentPosition());
-        BroadcastUtil.postBroadcast(intent);
+        sendBroadcast(intent);
     }
 
     private void createNotificationChannel() {
         NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(MUSIC_CHANNEL, "音乐更新", NotificationManager.IMPORTANCE_DEFAULT);
+            //如果是低优先级通知发出来无声音
+            NotificationChannel channel = new NotificationChannel(MUSIC_CHANNEL, "音乐更新", NotificationManager.IMPORTANCE_LOW);
             manager.createNotificationChannel(channel);
         }
     }
 
     private void updateMusicNotification(Music music) {
-        RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.music_notify);
-        remoteViews.setTextViewText(R.id.tvName, music.getName());
-        Notification notification = new NotificationCompat.Builder(this, MUSIC_CHANNEL)
+        final RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.music_notify);
+        final Notification notification = new NotificationCompat.Builder(this, MUSIC_CHANNEL)
                 .setSmallIcon(R.drawable.ic_default_music_album_pic)
                 .setCustomBigContentView(remoteViews)
                 .build();
+        Glide.with(this)
+                .asBitmap()
+                .error(R.drawable.ic_default_music_album_pic)
+                .load(MusicUtil.getAlbumPicUri(music.getAlbumId()))
+                .into(new SimpleTarget<Bitmap>() {
+
+                    @Override
+                    public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                        remoteViews.setImageViewBitmap(R.id.ivPic, resource);
+                        startForeground(1, notification);
+                    }
+
+                    @Override
+                    public void onLoadFailed(@Nullable Drawable errorDrawable) {
+                        remoteViews.setImageViewResource(R.id.ivPic, R.drawable.ic_default_music_album_pic);
+                        startForeground(1, notification);
+                    }
+                });
+        remoteViews.setTextViewText(R.id.tvName, music.getName());
+        remoteViews.setTextViewText(R.id.tvArtist, music.getArtist());
+        Intent previousIntent = new Intent(Constant.ACTION_PREVIOUS_MUSIC);
+        PendingIntent previousPi = PendingIntent.getBroadcast(this, 0, previousIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        remoteViews.setOnClickPendingIntent(R.id.btnPrevious, previousPi);
         startForeground(1, notification);
     }
 
@@ -129,7 +161,10 @@ public class MusicService extends Service {
                 mHandler.postDelayed(mUpdatePlyingPositionTask, DELAY_TIME_UPDATE_PLAYING_POSITION);
                 notifyUpdatePlayingPosition();
 
-                updateMusicNotification(music);
+                if (mPlayingMusic == null || mPlayingMusic.getId() != music.getId()) {
+                    updateMusicNotification(music);
+                }
+                mPlayingMusic = music;
             } catch (IOException e) {
                 e.printStackTrace();
             }
