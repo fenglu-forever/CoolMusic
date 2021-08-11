@@ -5,9 +5,7 @@ public class Constant {
 
     public static final String ACTION_PREVIOUS_MUSIC = "com.luyuanyuan.musicplayer.intent.ACTION_PREVIOUS_MUSIC";
 
-    public static final String ACTION_PLAY_MUSIC = "com.luyuanyuan.musicplayer.intent.ACTION_PLAY_MUSIC";
-
-    public static final String ACTION_PAUSE_MUSIC = "com.luyuanyuan.musicplayer.intent.ACTION_PAUSE_MUSIC";
+    public static final String ACTION_PLAY_OR_PAUSE_MUSIC = "com.luyuanyuan.musicplayer.intent.ACTION_PLAY_OR_PAUSE_MUSIC";
 
     public static final String ACTION_UPDATE_PROGRESS = "com.luyuanyuan.musicplayer.intent.ACTION_UPDATE_PROGRESS";
 

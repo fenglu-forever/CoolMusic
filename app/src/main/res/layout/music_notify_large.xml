@@ -6,8 +6,8 @@
 
     <ImageView
         android:id="@+id/ivPic"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
+        android:layout_width="114dp"
+        android:layout_height="114dp"
         android:src="@drawable/ic_default_music_album_pic" />
 
     <LinearLayout
@@ -106,7 +106,7 @@
                 android:layout_height="wrap_content"
                 android:text="词"
                 android:textColor="@android:color/black"
-                android:textSize="20sp" />
+                android:textSize="18sp" />
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

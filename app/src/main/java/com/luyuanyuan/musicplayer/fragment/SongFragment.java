@@ -206,15 +206,8 @@ public class SongFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btnPlayOrPause:
-                if (mSelectedMusic != null) {
-                    Intent intent;
-                    if (mSelectedMusic.isPlaying()) {
-                        intent = new Intent(Constant.ACTION_PAUSE_MUSIC);
-                    } else {
-                        intent = new Intent(Constant.ACTION_PLAY_MUSIC);
-                    }
-                    getActivity().sendBroadcast(intent);
-                }
+                Intent intentPlayOrPause = new Intent(Constant.ACTION_PLAY_OR_PAUSE_MUSIC);
+                getActivity().sendBroadcast(intentPlayOrPause);
                 break;
             case R.id.btnNext:
                 Intent intent = new Intent(Constant.ACTION_NEXT_MUSIC);

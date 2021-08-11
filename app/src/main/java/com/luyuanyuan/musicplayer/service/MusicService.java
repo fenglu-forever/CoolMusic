@@ -107,10 +107,14 @@ public class MusicService extends Service {
     }
 
     private void updateMusicNotification(Music music) {
-        final RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.music_notify);
+        final RemoteViews rvLarge = new RemoteViews(getPackageName(), R.layout.music_notify_large);
+        final RemoteViews rvMin = new RemoteViews(getPackageName(), R.layout.music_notify_min);
         final Notification notification = new NotificationCompat.Builder(this, MUSIC_CHANNEL)
                 .setSmallIcon(R.drawable.ic_default_music_album_pic)
-                .setCustomBigContentView(remoteViews)
+                .setCustomBigContentView(rvLarge)
+                .setContent(rvMin)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setOngoing(true)
                 .build();
         Glide.with(this)
                 .asBitmap()
@@ -120,22 +124,46 @@ public class MusicService extends Service {
 
                     @Override
                     public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-                        remoteViews.setImageViewBitmap(R.id.ivPic, resource);
+                        updateNotifyPicture(rvLarge, resource);
+                        updateNotifyPicture(rvMin, resource);
                         startForeground(1, notification);
                     }
 
                     @Override
                     public void onLoadFailed(@Nullable Drawable errorDrawable) {
-                        remoteViews.setImageViewResource(R.id.ivPic, R.drawable.ic_default_music_album_pic);
+                        updateNotifyPicture(rvLarge, R.drawable.ic_default_music_album_pic);
+                        updateNotifyPicture(rvMin, R.drawable.ic_default_music_album_pic);
                         startForeground(1, notification);
                     }
                 });
+        updateNotifyBaseInfo(rvLarge, music);
+        updateNotifyBaseInfo(rvMin, music);
+        startForeground(1, notification);
+    }
+
+    private void updateNotifyBaseInfo(RemoteViews remoteViews, Music music) {
         remoteViews.setTextViewText(R.id.tvName, music.getName());
         remoteViews.setTextViewText(R.id.tvArtist, music.getArtist());
+        remoteViews.setImageViewResource(R.id.btnPlayOrPause, music.isPlaying() ? R.drawable.ic_notify_play : R.drawable.ic_notify_pause);
         Intent previousIntent = new Intent(Constant.ACTION_PREVIOUS_MUSIC);
         PendingIntent previousPi = PendingIntent.getBroadcast(this, 0, previousIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         remoteViews.setOnClickPendingIntent(R.id.btnPrevious, previousPi);
-        startForeground(1, notification);
+
+        Intent nextIntent = new Intent(Constant.ACTION_NEXT_MUSIC);
+        PendingIntent nextPi = PendingIntent.getBroadcast(this, 0, nextIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        remoteViews.setOnClickPendingIntent(R.id.btnNext, nextPi);
+
+        Intent playOrPauseIntent = new Intent(Constant.ACTION_PLAY_OR_PAUSE_MUSIC);
+        PendingIntent playOrPausePi = PendingIntent.getBroadcast(this, 0, playOrPauseIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        remoteViews.setOnClickPendingIntent(R.id.btnPlayOrPause, playOrPausePi);
+    }
+
+    private void updateNotifyPicture(RemoteViews remoteViews, Bitmap bitmap) {
+        remoteViews.setImageViewBitmap(R.id.ivPic, bitmap);
+    }
+
+    private void updateNotifyPicture(RemoteViews remoteViews, int resId) {
+        remoteViews.setImageViewResource(R.id.ivPic, resId);
     }
 
     @Nullable
@@ -161,9 +189,7 @@ public class MusicService extends Service {
                 mHandler.postDelayed(mUpdatePlyingPositionTask, DELAY_TIME_UPDATE_PLAYING_POSITION);
                 notifyUpdatePlayingPosition();
 
-                if (mPlayingMusic == null || mPlayingMusic.getId() != music.getId()) {
-                    updateMusicNotification(music);
-                }
+                updateMusicNotification(music);
                 mPlayingMusic = music;
             } catch (IOException e) {
                 e.printStackTrace();
@@ -178,6 +204,9 @@ public class MusicService extends Service {
                 mHandler.removeCallbacks(mUpdateProgressTask);
 
                 mHandler.removeCallbacks(mUpdatePlyingPositionTask);
+                if (mPlayingMusic != null) {
+                    updateMusicNotification(mPlayingMusic);
+                }
                 notifyUpdateProgress();
             }
         }
