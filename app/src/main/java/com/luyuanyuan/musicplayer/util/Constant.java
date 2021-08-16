@@ -21,8 +21,13 @@ public class Constant {
 
     public static final String ACTION_MUSIC_PLAY_COMPLETE = "com.luyuanyuan.musicplayer.intent.ACTION_MUSIC_PLAY_COMPLETE";
 
-    public static final String EXTRA_MUSIC = "extra_music";
+    public static final String ACTION_CANCEL_MUSIC_NOTIFICATION = "com.luyuanyuan.musicplayer.intent.ACTION_CANCEL_MUSIC_NOTIFICATION";
 
+    public static final String ACTION_UPDATE_MUSIC_COLLECT_STATE = "com.luyuanyuan.musicplayer.intent.ACTION_UPDATE_MUSIC_COLLECT_STATE";
+
+    public static final String ACTION_UPDATE_DETAIL_COLLECT_STATE = "com.luyuanyuan.musicplayer.intent.ACTION_UPDATE_DETAIL_COLLECT_STATE";
+
+    public static final String EXTRA_MUSIC = "extra_music";
 
     public static final int PLAY_MODE_SEQUENCE = 0;
     public static final int PLAY_MODE_SINGLE = 1;

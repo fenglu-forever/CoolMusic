@@ -160,7 +160,7 @@ public class SongFragment extends Fragment implements View.OnClickListener {
             btnPlayerOrPause.setImageResource(R.drawable.ic_music_detail_pause);
         }
         tvTotalDuration.setText(MusicUtil.getMusicDuration(mSelectedMusic.getDuration()));
-        ivCollect.setSelected(MusicUtil.isCollect(mSelectedMusic));
+        updateCollectIcon();
     }
 
     public void updateMusicProgress(int progress, int currentDuration) {
@@ -202,6 +202,13 @@ public class SongFragment extends Fragment implements View.OnClickListener {
         mLyricTextView.setPlayingDuration(mPlayingPosition);
     }
 
+    public void updateCollectIcon() {
+        if (getView() == null || mSelectedMusic == null) {
+            return;
+        }
+        ivCollect.setSelected(MusicUtil.isCollect(mSelectedMusic));
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -235,17 +242,8 @@ public class SongFragment extends Fragment implements View.OnClickListener {
                 setPlayMode(playMode);
                 break;
             case R.id.ivCollect:
-                if (mSelectedMusic != null) {
-                    if (ivCollect.isSelected()) {
-                        if (MusicUtil.cancelCollectMusic(mSelectedMusic) > 0) {
-                            ivCollect.setSelected(false);
-                        }
-                    } else {
-                        if (MusicUtil.collectMusic(mSelectedMusic) > 0) {
-                            ivCollect.setSelected(true);
-                        }
-                    }
-                }
+                Intent collectIntent = new Intent(Constant.ACTION_UPDATE_MUSIC_COLLECT_STATE);
+                getActivity().sendBroadcast(collectIntent);
                 break;
             default:
                 break;

@@ -50,6 +50,7 @@
                 android:layout_weight="1" />
 
             <ImageView
+                android:id="@+id/ivClose"
                 android:layout_width="16dp"
                 android:layout_height="16dp"
                 android:layout_gravity="end"
@@ -71,6 +72,7 @@
             android:paddingEnd="16dp">
 
             <ImageView
+                android:id="@+id/ivCollect"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@drawable/ic_notify_collect_normal" />

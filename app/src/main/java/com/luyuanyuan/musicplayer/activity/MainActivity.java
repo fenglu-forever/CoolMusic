@@ -92,6 +92,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         filter.addAction(Constant.ACTION_PLAY_OR_PAUSE_MUSIC);
         filter.addAction(Constant.ACTION_SEEK_MUSIC);
         filter.addAction(Constant.ACTION_MUSIC_PLAY_COMPLETE);
+        filter.addAction(Constant.ACTION_CANCEL_MUSIC_NOTIFICATION);
+        filter.addAction(Constant.ACTION_UPDATE_MUSIC_COLLECT_STATE);
         registerReceiver(mMusicReceiver, filter);
     }
 
@@ -393,6 +395,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         break;
                     case Constant.ACTION_MUSIC_PLAY_COMPLETE:
                         onMusicPlayCompleted();
+                        break;
+                    case Constant.ACTION_CANCEL_MUSIC_NOTIFICATION:
+                        if (mMusicServer != null) {
+                            mMusicServer.requestCancelMusicNotifycation();
+                        }
+                        break;
+                    case Constant.ACTION_UPDATE_MUSIC_COLLECT_STATE:
+                        if (mSelectedMusic != null) {
+                            if (MusicUtil.isCollect(mSelectedMusic)) {
+                                if (MusicUtil.cancelCollectMusic(mSelectedMusic) > 0) {
+                                    if (mMusicServer != null) {
+                                        //与收藏功能相关的UI都要刷新
+                                        mMusicServer.requestUpdateMusicNotifycation(mSelectedMusic);
+                                        Intent detailCollectIntent = new Intent(Constant.ACTION_UPDATE_DETAIL_COLLECT_STATE);
+                                        sendBroadcast(detailCollectIntent);
+                                    }
+                                }
+                            } else {
+                                if (MusicUtil.collectMusic(mSelectedMusic) > 0) {
+                                    if (mMusicServer != null) {
+                                        mMusicServer.requestUpdateMusicNotifycation(mSelectedMusic);
+                                        Intent detailCollectIntent = new Intent(Constant.ACTION_UPDATE_DETAIL_COLLECT_STATE);
+                                        sendBroadcast(detailCollectIntent);
+                                    }
+                                }
+                            }
+                        }
                         break;
                     default:
                         break;

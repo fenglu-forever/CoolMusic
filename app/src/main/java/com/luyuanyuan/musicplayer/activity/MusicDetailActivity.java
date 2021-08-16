@@ -77,6 +77,7 @@ public class MusicDetailActivity extends AppCompatActivity implements View.OnCli
         filter.addAction(Constant.ACTION_UPDATE_MUSIC);
         filter.addAction(Constant.ACTION_UPDATE_PROGRESS);
         filter.addAction(Constant.ACTION_UPDATE_PLAYING_POSITION);
+        filter.addAction(Constant.ACTION_UPDATE_DETAIL_COLLECT_STATE);
         registerReceiver(mReceiver, filter);
     }
 
@@ -244,6 +245,10 @@ public class MusicDetailActivity extends AppCompatActivity implements View.OnCli
                     int playingPosition = intent.getIntExtra(Constant.EXTRA_MUSIC_CURRENT_DURATION, 0);
                     SongFragment sFragment = (SongFragment) mFragmentList.get(0);
                     sFragment.updatePlayingPosition(playingPosition);
+                    break;
+                case Constant.ACTION_UPDATE_DETAIL_COLLECT_STATE:
+                    SongFragment sgFragment = (SongFragment) mFragmentList.get(0);
+                    sgFragment.updateCollectIcon();
                     break;
                 default:
                     break;

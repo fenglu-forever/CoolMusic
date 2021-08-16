@@ -145,6 +145,7 @@ public class MusicService extends Service {
         remoteViews.setTextViewText(R.id.tvName, music.getName());
         remoteViews.setTextViewText(R.id.tvArtist, music.getArtist());
         remoteViews.setImageViewResource(R.id.btnPlayOrPause, music.isPlaying() ? R.drawable.ic_notify_play : R.drawable.ic_notify_pause);
+        remoteViews.setImageViewResource(R.id.ivCollect, MusicUtil.isCollect(music) ? R.drawable.ic_notify_collect_selected : R.drawable.ic_notify_collect_normal);
         Intent previousIntent = new Intent(Constant.ACTION_PREVIOUS_MUSIC);
         PendingIntent previousPi = PendingIntent.getBroadcast(this, 0, previousIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         remoteViews.setOnClickPendingIntent(R.id.btnPrevious, previousPi);
@@ -156,6 +157,14 @@ public class MusicService extends Service {
         Intent playOrPauseIntent = new Intent(Constant.ACTION_PLAY_OR_PAUSE_MUSIC);
         PendingIntent playOrPausePi = PendingIntent.getBroadcast(this, 0, playOrPauseIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         remoteViews.setOnClickPendingIntent(R.id.btnPlayOrPause, playOrPausePi);
+
+        Intent cancelMusicNotifyIntent = new Intent(Constant.ACTION_CANCEL_MUSIC_NOTIFICATION);
+        PendingIntent cancelMusicNotifyPi = PendingIntent.getBroadcast(this, 0, cancelMusicNotifyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        remoteViews.setOnClickPendingIntent(R.id.ivClose, cancelMusicNotifyPi);
+
+        Intent musicCollectIntent = new Intent(Constant.ACTION_UPDATE_MUSIC_COLLECT_STATE);
+        PendingIntent musicCollectIntentPi = PendingIntent.getBroadcast(this, 0, musicCollectIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        remoteViews.setOnClickPendingIntent(R.id.ivCollect, musicCollectIntentPi);
     }
 
     private void updateNotifyPicture(RemoteViews remoteViews, Bitmap bitmap) {
@@ -217,6 +226,14 @@ public class MusicService extends Service {
 
         public int requestPlayingPosition() {
             return mPlayer.getCurrentPosition();
+        }
+
+        public void requestCancelMusicNotifycation() {
+            stopForeground(true);
+        }
+
+        public void requestUpdateMusicNotifycation(Music music) {
+            updateMusicNotification(music);
         }
     }
 }
