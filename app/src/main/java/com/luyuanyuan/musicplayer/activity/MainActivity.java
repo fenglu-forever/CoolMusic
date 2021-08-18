@@ -2,7 +2,6 @@ package com.luyuanyuan.musicplayer.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.viewpager.widget.ViewPager;
 
 import android.animation.ObjectAnimator;
@@ -410,6 +409,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                         mMusicServer.requestUpdateMusicNotifycation(mSelectedMusic);
                                         Intent detailCollectIntent = new Intent(Constant.ACTION_UPDATE_DETAIL_COLLECT_STATE);
                                         sendBroadcast(detailCollectIntent);
+                                        CollectFragment collectFragment = (CollectFragment) mFragmentList.get(2);
+                                        collectFragment.reloadMusicListAndRefresh();
                                     }
                                 }
                             } else {
@@ -418,6 +419,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                         mMusicServer.requestUpdateMusicNotifycation(mSelectedMusic);
                                         Intent detailCollectIntent = new Intent(Constant.ACTION_UPDATE_DETAIL_COLLECT_STATE);
                                         sendBroadcast(detailCollectIntent);
+                                        CollectFragment collectFragment = (CollectFragment) mFragmentList.get(2);
+                                        collectFragment.reloadMusicListAndRefresh();
                                     }
                                 }
                             }

@@ -16,6 +16,7 @@ import com.luyuanyuan.musicplayer.activity.MainActivity;
 import com.luyuanyuan.musicplayer.adapter.MusicAdapter;
 import com.luyuanyuan.musicplayer.entity.Music;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -25,6 +26,14 @@ public abstract class MusicListFragment extends BaseFragment {
     private MusicAdapter mAdapter;
     private int mSelectedPosition = -1;
     private Random mRandom = new Random();
+    private List<Music> mMusicData = new ArrayList<>();
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mMusicData.clear();
+        mMusicData.addAll(loadMusicList());
+    }
 
     @Nullable
     @Override
@@ -65,7 +74,7 @@ public abstract class MusicListFragment extends BaseFragment {
     }
 
     private void initAdapters() {
-        List<Music> musicList = loadMusicList();
+        List<Music> musicList = mMusicData;
         MainActivity activity = (MainActivity) getActivity();
         Music selMusic = activity.getSelectedMusic();
         if (selMusic != null) {
@@ -143,4 +152,12 @@ public abstract class MusicListFragment extends BaseFragment {
     }
 
     public abstract List<Music> loadMusicList();
+
+    public void reloadMusicListAndRefresh() {
+        mMusicData.clear();
+        mMusicData.addAll(loadMusicList());
+        if (mAdapter != null) {
+            mAdapter.notifyDataSetChanged();
+        }
+    }
 }
