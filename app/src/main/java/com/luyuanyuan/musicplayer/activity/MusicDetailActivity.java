@@ -55,12 +55,18 @@ public class MusicDetailActivity extends AppCompatActivity implements View.OnCli
             public void onLyricChange(@Nullable Lyric lyric) {
                 SongFragment songFragment = (SongFragment) mFragmentList.get(0);
                 songFragment.updateLyric(lyric);
+
+                LyricFragment lyricFragment = (LyricFragment) mFragmentList.get(1);
+                lyricFragment.updateLyric(lyric);
             }
 
             @Override
             public void onLineUpdate(@NonNull Lyric.Line line) {
                 SongFragment songFragment = (SongFragment) mFragmentList.get(0);
                 songFragment.updateLine(line);
+
+                LyricFragment lyricFragment = (LyricFragment) mFragmentList.get(1);
+                lyricFragment.updateLine(line);
             }
         });
         mSelectedMusic = (Music) getIntent().getSerializableExtra(Constant.EXTRA_MUSIC);

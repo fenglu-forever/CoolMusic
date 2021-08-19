@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?><!-- lyric item child layout-->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="5dp"
+    android:paddingBottom="5dp">
+
+    <!-- 为了让每句歌词都能完整显示出来，这里的TextView绝对不能用单行属性 -->
+    <TextView
+        android:id="@+id/tvLine"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</FrameLayout>

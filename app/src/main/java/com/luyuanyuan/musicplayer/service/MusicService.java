@@ -144,7 +144,7 @@ public class MusicService extends Service {
     private void updateNotifyBaseInfo(RemoteViews remoteViews, Music music) {
         remoteViews.setTextViewText(R.id.tvName, music.getName());
         remoteViews.setTextViewText(R.id.tvArtist, music.getArtist());
-        remoteViews.setImageViewResource(R.id.btnPlayOrPause, music.isPlaying() ? R.drawable.ic_notify_play : R.drawable.ic_notify_pause);
+        remoteViews.setImageViewResource(R.id.btnPlayOrPause, music.isPlaying() ? R.drawable.ic_notify_pause : R.drawable.ic_notify_play);
         remoteViews.setImageViewResource(R.id.ivCollect, MusicUtil.isCollect(music) ? R.drawable.ic_notify_collect_selected : R.drawable.ic_notify_collect_normal);
         Intent previousIntent = new Intent(Constant.ACTION_PREVIOUS_MUSIC);
         PendingIntent previousPi = PendingIntent.getBroadcast(this, 0, previousIntent, PendingIntent.FLAG_UPDATE_CURRENT);

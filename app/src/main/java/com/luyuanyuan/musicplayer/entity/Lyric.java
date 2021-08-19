@@ -51,6 +51,7 @@ public class Lyric {
         private String text;
         private int currentDuration;
         private int nextDuration;
+        private int linePosition;
 
         public String getText() {
             return text;
@@ -74,6 +75,14 @@ public class Lyric {
 
         public void setNextDuration(int nextDuration) {
             this.nextDuration = nextDuration;
+        }
+
+        public int getLinePosition() {
+            return linePosition;
+        }
+
+        public void setLinePosition(int linePosition) {
+            this.linePosition = linePosition;
         }
     }
 }

@@ -213,29 +213,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 return;
             }
         }
-
-        // 1.把选中歌曲的信息同步到底部栏
-        onMusicSelected(music);
-        //2.把播放状态同步到底部栏
-        onPlayStateChanged(true, music);
-        // 3.让 MediaPlayer执行
+        // 1.让 MediaPlayer执行
         if (mMusicServer != null) {
             mMusicServer.requestPlayMusic(music);
         }
+        // 2.把选中歌曲的信息同步到底部栏
+        onMusicSelected(music);
+        // 3.把播放状态同步到底部栏
+        onPlayStateChanged(true, music);
     }
 
     private void seekMusic(int seekPositionDuration) {
         if (mMusicServer != null) {
             mMusicServer.requestSetCurrentPosition(seekPositionDuration);
         }
-        // 1.把选中歌曲的信息同步到底部栏
-        onMusicSelected(mSelectedMusic);
-        //2.把播放状态同步到底部栏
-        onPlayStateChanged(true, mSelectedMusic);
-        // 3.让 MediaPlayer执行
+        // 1.让 MediaPlayer执行
         if (mMusicServer != null) {
             mMusicServer.requestPlayMusic(mSelectedMusic);
         }
+        // 2.把选中歌曲的信息同步到底部栏
+        onMusicSelected(mSelectedMusic);
+        // 3.把播放状态同步到底部栏
+        onPlayStateChanged(true, mSelectedMusic);
     }
 
     private void onMusicPlayCompleted() {
@@ -258,12 +257,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void pauseMusic(Music music) {
-        // 1.把歌曲的播放状态同步更新底部栏
-        onPlayStateChanged(false, music);
-        // 2.让MediaPlayer执行暂停
+        // 1.让MediaPlayer执行暂停
         if (mMusicServer != null) {
             mMusicServer.requestPauseMusic();
         }
+        // 2.把歌曲的播放状态同步更新底部栏
+        onPlayStateChanged(false, music);
     }
 
     private void nextMusic() {

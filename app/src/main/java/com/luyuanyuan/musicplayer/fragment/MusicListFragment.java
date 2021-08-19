@@ -77,6 +77,11 @@ public abstract class MusicListFragment extends BaseFragment {
         List<Music> musicList = mMusicData;
         MainActivity activity = (MainActivity) getActivity();
         Music selMusic = activity.getSelectedMusic();
+        // 每次初始化View之前，需要多所有数据状态重置
+        for (Music music : mMusicData) {
+             music.setPlaying(false);
+             music.setSelected(false);
+        }
         if (selMusic != null) {
             for (Music music : musicList) {
                 if (music.getId() == selMusic.getId()) {
@@ -157,6 +162,18 @@ public abstract class MusicListFragment extends BaseFragment {
         mMusicData.clear();
         mMusicData.addAll(loadMusicList());
         if (mAdapter != null) {
+            MainActivity activity = (MainActivity) getActivity();
+            Music selMusic = activity.getSelectedMusic();
+            if (selMusic != null) {
+                for (Music music : mMusicData) {
+                    if (music.getId() == selMusic.getId()) {
+                        music.setSelected(selMusic.isSelected());
+                        music.setPlaying(selMusic.isPlaying());
+                        break;
+                    }
+                }
+            }
+            tvMusicNumber.setText(mAdapter.getCount() + "首");
             mAdapter.notifyDataSetChanged();
         }
     }

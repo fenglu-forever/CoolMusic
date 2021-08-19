@@ -2,6 +2,7 @@ package com.luyuanyuan.musicplayer.util;
 
 import android.os.Environment;
 import android.os.Handler;
+import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -16,6 +17,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -23,6 +25,7 @@ import java.util.regex.Pattern;
 public class LyricHelper {
     private static final String TAG = "LyricHelper";
     private static final String LYRIC_DIR = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath();
+    //private static final String LYRIC_DIR = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC), "cool_music_lyrics").getPath();
 
     private static final Pattern PATTERN = Pattern.compile(
             "\\[\\d{1,2}:\\d{1,2}([.:]\\d{1,2})?]");
@@ -129,6 +132,30 @@ public class LyricHelper {
             if (lineList.size() > 0) {
                 lineList.get(lineList.size() - 1).setNextDuration(music.getDuration());
             }
+            // TODO modify add
+            // filter empty text line.
+            Iterator<Lyric.Line> lineIterator = lineList.iterator();
+            int linePos = 0;
+            while (lineIterator.hasNext()) {
+                Lyric.Line nextLine = lineIterator.next();
+                if (TextUtils.isEmpty(nextLine.getText())) {
+                    lineIterator.remove();
+                } else {
+                    nextLine.setLinePosition(linePos);
+                    linePos++;
+                }
+            }
+            // resolve some lyric file base info isn't exits.
+            if (TextUtils.isEmpty(lyric.getTitle())) {
+                lyric.setTitle(music.getName());
+            }
+            if (TextUtils.isEmpty(lyric.getArtist())) {
+                lyric.setArtist(music.getArtist());
+            }
+            if (TextUtils.isEmpty(lyric.getAlbum())) {
+                lyric.setAlbum(music.getAlbumName());
+            }
+            // TODO modify add
             mLyric = lyric;
             if (mCallback != null) {
                 mCallback.onLyricChange(mLyric);
