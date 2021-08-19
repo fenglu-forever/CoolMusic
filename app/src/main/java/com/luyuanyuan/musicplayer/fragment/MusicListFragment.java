@@ -74,25 +74,43 @@ public abstract class MusicListFragment extends BaseFragment {
     }
 
     private void initAdapters() {
+        mSelectedPosition = -1;
         List<Music> musicList = mMusicData;
         MainActivity activity = (MainActivity) getActivity();
         Music selMusic = activity.getSelectedMusic();
-        // 每次初始化View之前，需要多所有数据状态重置
-        for (Music music : mMusicData) {
-             music.setPlaying(false);
-             music.setSelected(false);
-        }
+        /*
+         * 不能简单对列表重置，因为Fragment会将自己选中的音乐传递给Activity,
+         * Activity中和Fragment中音乐是同一个对象，如果直接For循环重置，
+         * 会导致Fragment自动又将选中的音乐状态置为非选中产生bug了
+         *
+         * 因此需要对列表做遍历，将列表中与Activity中选中音乐相同的歌保持状态同步，
+         * 其他的音乐均为重置状态，这样也就保证了列表中最多只有一个歌处于选中状态.
+         */
         if (selMusic != null) {
-            for (Music music : musicList) {
+            int size = musicList.size();
+            for (int i = 0; i < size; i++) {
+                Music music = musicList.get(i);
                 if (music.getId() == selMusic.getId()) {
+                    mSelectedPosition = i;//记录选中的位置,便于下面进行滚动
                     music.setSelected(selMusic.isSelected());
                     music.setPlaying(selMusic.isPlaying());
-                    break;
+                } else {
+                    music.setSelected(false);
+                    music.setPlaying(false);
                 }
             }
         }
+        mMusicList.postOnAnimation(new Runnable() {
+            @Override
+            public void run() {
+                if (mSelectedPosition != -1) {
+                    mMusicList.smoothScrollToPosition(mSelectedPosition);
+                }
+            }
+        });
         mAdapter = new MusicAdapter(getActivity(), musicList);
         mMusicList.setAdapter(mAdapter);
+
         tvMusicNumber.setText(mAdapter.getCount() + "首");
     }
 
@@ -161,18 +179,32 @@ public abstract class MusicListFragment extends BaseFragment {
     public void reloadMusicListAndRefresh() {
         mMusicData.clear();
         mMusicData.addAll(loadMusicList());
+        mSelectedPosition = -1;
         if (mAdapter != null) {
             MainActivity activity = (MainActivity) getActivity();
             Music selMusic = activity.getSelectedMusic();
             if (selMusic != null) {
-                for (Music music : mMusicData) {
+                int size = mMusicData.size();
+                for (int i = 0; i < size; i++) {
+                    Music music = mMusicData.get(i);
                     if (music.getId() == selMusic.getId()) {
+                        mSelectedPosition = i;//记录选中的位置,便于下面进行滚动
                         music.setSelected(selMusic.isSelected());
                         music.setPlaying(selMusic.isPlaying());
-                        break;
+                    } else {
+                        music.setSelected(false);
+                        music.setPlaying(false);
                     }
                 }
             }
+            mMusicList.postOnAnimation(new Runnable() {
+                @Override
+                public void run() {
+                    if (mSelectedPosition != -1) {
+                        mMusicList.smoothScrollToPosition(mSelectedPosition);
+                    }
+                }
+            });
             tvMusicNumber.setText(mAdapter.getCount() + "首");
             mAdapter.notifyDataSetChanged();
         }

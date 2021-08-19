@@ -102,6 +102,8 @@ public class LyricListView extends ListView {
         mLineList.clear();
         mLineList.addAll(lineList);
         mAdapter.notifyDataSetChanged();
+        // Auto scroll the list view to top position on change lyric.
+        smoothScrollToPositionFromTop(0, 0, ANIM_DURATION);
     }
 
     public void setSelectedLine(int selLinePos) {
