@@ -38,6 +38,7 @@
             android:layout_weight="1" />
 
         <ImageView
+            android:id="@+id/ivManagerList"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_marginStart="24dp"

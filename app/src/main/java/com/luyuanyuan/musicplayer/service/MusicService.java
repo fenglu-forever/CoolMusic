@@ -101,7 +101,7 @@ public class MusicService extends Service {
         NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             //如果是低优先级通知发出来无声音
-            NotificationChannel channel = new NotificationChannel(MUSIC_CHANNEL, "音乐更新", NotificationManager.IMPORTANCE_LOW);
+            NotificationChannel channel = new NotificationChannel(MUSIC_CHANNEL, "音乐更新", NotificationManager.IMPORTANCE_MIN);
             manager.createNotificationChannel(channel);
         }
     }

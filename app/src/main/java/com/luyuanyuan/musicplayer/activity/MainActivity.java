@@ -24,7 +24,6 @@ import com.bumptech.glide.Glide;
 import com.luyuanyuan.musicplayer.R;
 import com.luyuanyuan.musicplayer.adapter.MusicCategoryAdapter;
 import com.luyuanyuan.musicplayer.entity.Music;
-import com.luyuanyuan.musicplayer.fragment.AlbumFragment;
 import com.luyuanyuan.musicplayer.fragment.BaseFragment;
 import com.luyuanyuan.musicplayer.fragment.CollectFragment;
 import com.luyuanyuan.musicplayer.fragment.MusicFragment;
@@ -156,9 +155,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         mRadioGroup.check(R.id.rbtnMusic);
                         break;
                     case 1:
-                        mRadioGroup.check(R.id.rbtnAlbum);
-                        break;
-                    case 2:
                         mRadioGroup.check(R.id.rbtnCollect);
                         break;
                     default:
@@ -178,11 +174,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     case R.id.rbtnMusic:
                         mViewPager.setCurrentItem(0);
                         break;
-                    case R.id.rbtnAlbum:
-                        mViewPager.setCurrentItem(1);
-                        break;
                     case R.id.rbtnCollect:
-                        mViewPager.setCurrentItem(2);
+                        mViewPager.setCurrentItem(1);
                         break;
                     default:
                         break;
@@ -197,7 +190,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void initAdapters() {
         mFragmentList.add(new MusicFragment());
-        mFragmentList.add(new AlbumFragment());
         mFragmentList.add(new CollectFragment());
         mViewPager.setAdapter(new MusicCategoryAdapter(getSupportFragmentManager(), FragmentPagerAdapter.BEHAVIOR_SET_USER_VISIBLE_HINT, mFragmentList));
     }
@@ -408,7 +400,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                         mMusicServer.requestUpdateMusicNotifycation(mSelectedMusic);
                                         Intent detailCollectIntent = new Intent(Constant.ACTION_UPDATE_DETAIL_COLLECT_STATE);
                                         sendBroadcast(detailCollectIntent);
-                                        CollectFragment collectFragment = (CollectFragment) mFragmentList.get(2);
+                                        CollectFragment collectFragment = (CollectFragment) mFragmentList.get(1);
                                         collectFragment.reloadMusicListAndRefresh();
                                     }
                                 }
@@ -418,7 +410,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                         mMusicServer.requestUpdateMusicNotifycation(mSelectedMusic);
                                         Intent detailCollectIntent = new Intent(Constant.ACTION_UPDATE_DETAIL_COLLECT_STATE);
                                         sendBroadcast(detailCollectIntent);
-                                        CollectFragment collectFragment = (CollectFragment) mFragmentList.get(2);
+                                        CollectFragment collectFragment = (CollectFragment) mFragmentList.get(1);
                                         collectFragment.reloadMusicListAndRefresh();
                                     }
                                 }

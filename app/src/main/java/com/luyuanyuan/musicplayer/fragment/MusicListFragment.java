@@ -1,6 +1,7 @@
 package com.luyuanyuan.musicplayer.fragment;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -74,6 +75,17 @@ public abstract class MusicListFragment extends BaseFragment {
     }
 
     private void initAdapters() {
+        mAdapter = new MusicAdapter(getActivity(), mMusicData);
+        mMusicList.setAdapter(mAdapter);
+        tvMusicNumber.setText(mAdapter.getCount() + "首");
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (getActivity() == null || !isVisibleToUser) {
+            return;
+        }
         mSelectedPosition = -1;
         List<Music> musicList = mMusicData;
         MainActivity activity = (MainActivity) getActivity();
@@ -108,10 +120,7 @@ public abstract class MusicListFragment extends BaseFragment {
                 }
             }
         });
-        mAdapter = new MusicAdapter(getActivity(), musicList);
-        mMusicList.setAdapter(mAdapter);
-
-        tvMusicNumber.setText(mAdapter.getCount() + "首");
+        mAdapter.notifyDataSetChanged();
     }
 
     @Override

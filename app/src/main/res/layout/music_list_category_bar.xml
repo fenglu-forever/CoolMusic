@@ -20,17 +20,6 @@
         android:textSize="15sp" />
 
     <com.luyuanyuan.musicplayer.ui.IndicatorRadioButton
-        android:id="@+id/rbtnAlbum"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:button="@null"
-        android:gravity="center"
-        android:text="专辑"
-        android:textColor="@color/selector_music_list_category"
-        android:textSize="15sp" />
-
-    <com.luyuanyuan.musicplayer.ui.IndicatorRadioButton
         android:id="@+id/rbtnCollect"
         android:layout_width="0dp"
         android:layout_height="match_parent"

@@ -88,14 +88,18 @@ public class MusicUtil {
         values.put("albumId", music.getAlbumId());
         values.put("albumName", music.getAlbumName());
         // insert方法会返回被添数据在数据表里的id，如果为-1代表添加失败，否则成功
-        return database.insert("Music", null, values);
+        long result = database.insert("Music", null, values);
+        database.close();
+        return result;
     }
 
     public static int cancelCollectMusic(Music music) {
         MusicDataOpenHelper helper = new MusicDataOpenHelper(MusicPlayerApp.getAppContext());
         SQLiteDatabase database = helper.getWritableDatabase();
         // delete方法会返回删除的数量，如果为0代表删除失败，否则成功
-        return database.delete("Music", "mediaId = ?", new String[]{music.getId() + ""});
+        int result = database.delete("Music", "mediaId = ?", new String[]{music.getId() + ""});
+        database.close();
+        return result;
     }
 
     public static boolean isCollect(Music music) {
@@ -107,6 +111,7 @@ public class MusicUtil {
             isCollect = cursor.getCount() > 0;
             cursor.close();
         }
+        database.close();
         return isCollect;
     }
 
@@ -138,7 +143,17 @@ public class MusicUtil {
             }
             cursor.close();
         }
+        database.close();
         return musicList;
+    }
+
+    public static void deleteCollectMusic(List<Music> musicList) {
+        MusicDataOpenHelper helper = new MusicDataOpenHelper(MusicPlayerApp.getAppContext());
+        SQLiteDatabase database = helper.getWritableDatabase();
+        for (Music music : musicList) {
+            database.delete("Music", "mediaId = ?", new String[]{music.getId() + ""});
+        }
+        database.close();
     }
 }
 
