@@ -1,5 +1,6 @@
 package com.luyuanyuan.musicplayer.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -13,6 +14,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.luyuanyuan.musicplayer.R;
 import com.luyuanyuan.musicplayer.adapter.MusicManagerAdapter;
 import com.luyuanyuan.musicplayer.entity.Music;
+import com.luyuanyuan.musicplayer.util.Constant;
 import com.luyuanyuan.musicplayer.util.MusicUtil;
 import com.luyuanyuan.musicplayer.util.UiUtil;
 
@@ -101,6 +103,8 @@ public class MusicMangerActivity extends AppCompatActivity implements View.OnCli
                     musicListAll.removeAll(deleteMusicList);
                     mAdapter.notifyDataSetChanged();
                     ivSelectedAll.setSelected(false);
+                    Intent intent = new Intent(Constant.ACTION_UPDATE_MUSIC_LIST_COLLECT_STATE);
+                    sendBroadcast(intent);
                 }
                 break;
             default:

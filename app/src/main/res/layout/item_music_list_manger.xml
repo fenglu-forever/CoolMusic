@@ -19,7 +19,7 @@
         android:layout_centerVertical="true"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp"
-        android:layout_toStartOf="@+id/ivMore"
+        android:layout_toStartOf="@+id/ivSelected"
         android:layout_toEndOf="@+id/ivPic"
         android:orientation="vertical">
 

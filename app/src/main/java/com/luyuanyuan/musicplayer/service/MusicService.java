@@ -64,6 +64,9 @@ public class MusicService extends Service {
         mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
+                if (mPlayingMusic == null) {
+                    return;
+                }
                 Intent intent = new Intent(Constant.ACTION_MUSIC_PLAY_COMPLETE);
                 sendBroadcast(intent);
             }
@@ -109,9 +112,16 @@ public class MusicService extends Service {
     private void updateMusicNotification(Music music) {
         final RemoteViews rvLarge = new RemoteViews(getPackageName(), R.layout.music_notify_large);
         final RemoteViews rvMin = new RemoteViews(getPackageName(), R.layout.music_notify_min);
+        Intent intentLunch = new Intent(Intent.ACTION_MAIN);
+        intentLunch.addCategory(Intent.CATEGORY_LAUNCHER);
+        intentLunch.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+        intentLunch.setPackage(getPackageName());
+        PendingIntent lunchPi = PendingIntent.getActivity(this, 0, intentLunch, PendingIntent.FLAG_UPDATE_CURRENT);
         final Notification notification = new NotificationCompat.Builder(this, MUSIC_CHANNEL)
                 .setSmallIcon(R.drawable.ic_default_music_album_pic)
                 .setCustomBigContentView(rvLarge)
+                .setContentIntent(lunchPi)
                 .setContent(rvMin)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setOngoing(true)

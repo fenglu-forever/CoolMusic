@@ -27,6 +27,8 @@ public class Constant {
 
     public static final String ACTION_UPDATE_DETAIL_COLLECT_STATE = "com.luyuanyuan.musicplayer.intent.ACTION_UPDATE_DETAIL_COLLECT_STATE";
 
+    public static final String ACTION_UPDATE_MUSIC_LIST_COLLECT_STATE = "com.luyuanyuan.musicplayer.intent.ACTION_UPDATE_MUSIC_LIST_COLLECT_STATE";
+
     public static final String EXTRA_MUSIC = "extra_music";
 
     public static final int PLAY_MODE_SEQUENCE = 0;

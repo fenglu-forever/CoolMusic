@@ -92,6 +92,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         filter.addAction(Constant.ACTION_MUSIC_PLAY_COMPLETE);
         filter.addAction(Constant.ACTION_CANCEL_MUSIC_NOTIFICATION);
         filter.addAction(Constant.ACTION_UPDATE_MUSIC_COLLECT_STATE);
+        filter.addAction(Constant.ACTION_UPDATE_MUSIC_LIST_COLLECT_STATE);
         registerReceiver(mMusicReceiver, filter);
     }
 
@@ -415,6 +416,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     }
                                 }
                             }
+                        }
+                        break;
+                    case Constant.ACTION_UPDATE_MUSIC_LIST_COLLECT_STATE:
+                        CollectFragment collectFragment = (CollectFragment) mFragmentList.get(1);
+                        collectFragment.reloadMusicListAndRefresh();
+                        if (mMusicServer != null && mSelectedMusic != null) {
+                            //与收藏功能相关的UI都要刷新
+                            mMusicServer.requestUpdateMusicNotifycation(mSelectedMusic);
                         }
                         break;
                     default:
