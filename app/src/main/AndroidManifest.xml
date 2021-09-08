@@ -26,10 +26,17 @@
         <service
             android:name=".service.MusicService"
             android:exported="false" />
+
         <activity
             android:name=".activity.MusicDetailActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".activity.MusicMangerActivity" />
+        <activity
+            android:name=".activity.MusicMangerActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.ForegroundActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

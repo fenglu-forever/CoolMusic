@@ -1,6 +1,8 @@
 package com.luyuanyuan.musicplayer.fragment;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -15,6 +17,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.google.android.material.card.MaterialCardView;
 import com.luyuanyuan.musicplayer.R;
 import com.luyuanyuan.musicplayer.activity.MusicDetailActivity;
@@ -148,10 +152,21 @@ public class SongFragment extends Fragment implements View.OnClickListener {
             return;
         }
         Glide.with(this)
+                .asBitmap()
                 .load(MusicUtil.getAlbumPicUri(mSelectedMusic.getAlbumId()))
-                .placeholder(R.drawable.ic_default_music_album_pic)
-                .error(R.drawable.ic_default_music_album_pic)
-                .into(mCoverImg);
+                .error(R.drawable.ic_default_detail_music_pic)
+                .into(new SimpleTarget<Bitmap>() {
+
+                    @Override
+                    public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                        mCoverImg.setImageBitmap(resource);
+                    }
+
+                    @Override
+                    public void onLoadFailed(@Nullable Drawable errorDrawable) {
+                        mCoverImg.setImageResource(R.drawable.ic_default_detail_music_pic);
+                    }
+                });
         tvName.setText(mSelectedMusic.getName());
         tvArtist.setText(mSelectedMusic.getArtist());
         if (mSelectedMusic.isPlaying()) {

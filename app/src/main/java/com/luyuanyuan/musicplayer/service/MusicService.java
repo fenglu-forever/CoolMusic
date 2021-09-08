@@ -24,6 +24,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.luyuanyuan.musicplayer.R;
+import com.luyuanyuan.musicplayer.activity.ForegroundActivity;
 import com.luyuanyuan.musicplayer.entity.Music;
 import com.luyuanyuan.musicplayer.util.Constant;
 import com.luyuanyuan.musicplayer.util.MusicUtil;
@@ -112,11 +113,8 @@ public class MusicService extends Service {
     private void updateMusicNotification(Music music) {
         final RemoteViews rvLarge = new RemoteViews(getPackageName(), R.layout.music_notify_large);
         final RemoteViews rvMin = new RemoteViews(getPackageName(), R.layout.music_notify_min);
-        Intent intentLunch = new Intent(Intent.ACTION_MAIN);
-        intentLunch.addCategory(Intent.CATEGORY_LAUNCHER);
-        intentLunch.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-        intentLunch.setPackage(getPackageName());
+        Intent intentLunch = new Intent(this, ForegroundActivity.class);
+        intentLunch.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         PendingIntent lunchPi = PendingIntent.getActivity(this, 0, intentLunch, PendingIntent.FLAG_UPDATE_CURRENT);
         final Notification notification = new NotificationCompat.Builder(this, MUSIC_CHANNEL)
                 .setSmallIcon(R.drawable.ic_default_music_album_pic)

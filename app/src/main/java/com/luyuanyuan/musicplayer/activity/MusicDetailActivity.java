@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -188,6 +190,11 @@ public class MusicDetailActivity extends AppCompatActivity implements View.OnCli
                         public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
                             Bitmap blurBitmap = UiUtil.blurBitmap(MusicDetailActivity.this, resource, 25);
                             ivBackground.setImageBitmap(blurBitmap);
+                        }
+
+                        @Override
+                        public void onLoadFailed(@Nullable Drawable errorDrawable) {
+                            ivBackground.setImageDrawable(new ColorDrawable(Color.TRANSPARENT));
                         }
                     });
         }
